@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Sproto
 {
@@ -36,6 +37,15 @@ namespace Sproto
 			this.index++;
 		}
 
+		private void write_uint32_to_uint64_sign(bool is_negative) {
+			byte v = (byte)((is_negative)?(0xff):(0));
+
+			this.data.WriteByte (v);
+			this.data.WriteByte (v);
+			this.data.WriteByte (v);
+			this.data.WriteByte (v);
+		}
+
 		private void write_tag(int tag, int value) {
 			int stag = tag - this.lasttag - 1;
 			if (stag > 0) {
@@ -51,30 +61,14 @@ namespace Sproto
 			this.lasttag = tag;
 		}
 
-		private void fill_size(int sz) {
-			if (sz <= 0)
-				error ("fill invaild size.");
-
-			this.data.WriteByte ((byte)(sz & 0xff));
-			this.data.WriteByte ((byte)((sz >> 8) & 0xff));
-			this.data.WriteByte ((byte)((sz >> 16) & 0xff));
-			this.data.WriteByte ((byte)((sz >> 24) & 0xff));
-		}
-
-		private int encode_integer(UInt32 v) {
-			this.fill_size (sizeof(UInt32));
-
+		private void write_uint32(UInt32 v) {
 			this.data.WriteByte ((byte)(v & 0xff));
 			this.data.WriteByte ((byte)((v >> 8) & 0xff));
 			this.data.WriteByte ((byte)((v >> 16) & 0xff));
 			this.data.WriteByte ((byte)((v >> 24) & 0xff));
-
-			return sizeof_length + sizeof(UInt32);
 		}
 
-		private int encode_uint64(UInt64 v) {
-			this.fill_size (sizeof(UInt64));
-
+		private void write_uint64(UInt64 v) {
 			this.data.WriteByte ((byte)(v & 0xff));
 			this.data.WriteByte ((byte)((v >> 8) & 0xff));
 			this.data.WriteByte ((byte)((v >> 16) & 0xff));
@@ -83,7 +77,26 @@ namespace Sproto
 			this.data.WriteByte ((byte)((v >> 40) & 0xff));
 			this.data.WriteByte ((byte)((v >> 48) & 0xff));
 			this.data.WriteByte ((byte)((v >> 56) & 0xff));
+		}
 
+		private void fill_size(int sz) {
+			if (sz <= 0)
+				error ("fill invaild size.");
+
+			this.write_uint32 ((UInt32)sz);
+		}
+
+		private int encode_integer(UInt32 v) {
+			this.fill_size (sizeof(UInt32));
+
+			this.write_uint32 (v);
+			return sizeof_length + sizeof(UInt32);
+		}
+
+		private int encode_uint64(UInt64 v) {
+			this.fill_size (sizeof(UInt64));
+
+			this.write_uint64 (v);
 			return sizeof_length + sizeof(UInt64);
 		}
 
@@ -96,11 +109,20 @@ namespace Sproto
 			return sizeof_length + str.Length;
 		}
 			
+		private int encode_struct(SprotoTypeBase obj){
+			byte[] data = obj.encode ();
+
+			this.fill_size (data.Length);
+			this.data.Write (data, 0, data.Length);
+
+			return sizeof_length + data.Length;
+		}
+
+
 
 		private static void error(string info) {
 			throw new Exception (info);
 		}
-
 
 
 
@@ -131,9 +153,76 @@ namespace Sproto
 			this.write_tag (tag, value);
 		}
 
+		public void write_integer(List<Int64> integer_list, int tag) {
+			if (integer_list == null || integer_list.Count <= 0)
+				return;
+
+			long sz_pos = this.data.Position;
+			this.data.Seek (sz_pos + sizeof_length, SeekOrigin.Begin);
+
+			long begin_pos = this.data.Position;
+			int intlen = sizeof(UInt32);
+			this.data.Seek (begin_pos + 1, SeekOrigin.Begin);
+
+			for (int index = 0; index < integer_list.Count; index++) {
+				Int64 v = integer_list [index];
+				Int64 vh = v >> 31;
+				int sz = (vh == 0 || vh == -1)?(sizeof(UInt32)):(sizeof(UInt64));
+
+				if (sz == sizeof(UInt32)) {
+					this.write_uint32 ((UInt32)v);
+					if (intlen == sizeof(UInt64)) {
+						bool is_negative = ((v & 0x80000000) == 0) ? (false) : (true);
+						this.write_uint32_to_uint64_sign (is_negative);
+					}
+
+				} else if (sz == sizeof(UInt64)) {
+					if (intlen == sizeof (UInt32)) {
+						this.data.Seek (begin_pos+1, SeekOrigin.Begin);
+						for (int i = 0; i < index; i++) {
+							UInt64 value = (UInt64)(integer_list[i]);
+							this.write_uint64 (value);
+						}
+						intlen = sizeof(UInt64);
+					}
+					this.write_uint64 ((UInt64)v);
+
+				} else {
+					error ("invalid integer size(" + sz + ")");
+				}
+			}
+
+			// fill integer size
+			long cur_pos = this.data.Position;
+			this.data.Seek (begin_pos, SeekOrigin.Begin);
+			this.data.WriteByte ((byte)intlen);
+
+			// fill array size
+			int size = (int)(cur_pos - begin_pos);
+			this.data.Seek (sz_pos, SeekOrigin.Begin);
+			this.fill_size (size);
+
+			this.data.Seek (cur_pos, SeekOrigin.Begin);
+			this.write_tag (tag, 0);
+		}
+
+
 		public void write_boolean(bool b, int tag) {
 			Int64 v = (b)?(1):(0);
 			this.write_integer (v, tag);
+		}
+
+		public void write_boolean(List<bool> b_list, int tag) {
+			if (b_list == null || b_list.Count <= 0)
+				return;
+
+			this.fill_size (b_list.Count);
+			for (int i = 0; i < b_list.Count; i++) {
+				byte v = (byte)((b_list [i])?(1):(0));
+				this.data.WriteByte (v);
+			}
+
+			this.write_tag (tag, 0);
 		}
 
 
@@ -142,8 +231,50 @@ namespace Sproto
 			this.write_tag (tag, 0);
 		}
 
+		public void write_string(List<string> str_list, int tag) {
+			if (str_list == null || str_list.Count <= 0)
+				return;
+
+			// write size length
+			int sz = 0;
+			foreach (string v in str_list) {
+				sz += sizeof_length + v.Length;
+			}
+			this.fill_size (sz);
+
+			// write stirng
+			foreach (string v in str_list) {
+				this.encode_string (v);
+			}
+
+			this.write_tag (tag, 0);
+		}
+
+
 		public void write_obj(SprotoTypeBase obj, int tag) {
-			error("TODO IT!");
+			this.encode_struct (obj);
+			this.write_tag (tag, 0);
+		}
+
+		public void write_obj(List<SprotoTypeBase> obj_list, int tag) {
+			if (obj_list == null || obj_list.Count <= 0)
+				return;
+
+			long sz_pos = this.data.Position;
+			this.data.Seek (sizeof_length, SeekOrigin.Current);
+
+			foreach (SprotoTypeBase v in obj_list) {
+				this.encode_struct (v);
+			}
+
+			long cur_pos = this.data.Position;
+			int sz = (int)(cur_pos - sz_pos - sizeof_length);
+			this.data.Seek (sz_pos, SeekOrigin.Begin);
+			this.fill_size (sz);
+
+			this.data.Seek (cur_pos, SeekOrigin.Begin);
+
+			this.write_tag (tag, 0);
 		}
 
 
@@ -167,7 +298,6 @@ namespace Sproto
 
 			// clear state
 			this.clear ();
-
 			return buffer;
 		}
 			

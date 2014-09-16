@@ -35,6 +35,10 @@ namespace Sproto {
 
 
 		// public API
+		public byte[] encode() {
+			return null;
+		}
+
 		public void pack(){
 
 		}
