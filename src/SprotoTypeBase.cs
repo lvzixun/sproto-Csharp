@@ -5,31 +5,32 @@ namespace Sproto {
 
 	public class SprotoTypeBase {
 		protected SprotoTypeFieldOP has_field;
-		protected MemoryStream encode_buffer;
+		private SprotoTypeSerialize serialize;
+
 
 		protected SprotoTypeBase(int max_field_count){
 			this.has_field = new SprotoTypeFieldOP (max_field_count);
-			this.encode_buffer = new MemoryStream ();
+			this.serialize = new SprotoTypeSerialize (max_field_count);
 		}
 
-		protected void write_integer(Int64 integer){
-
+		protected void write_integer(Int64 integer, int tag, int field_idx){
+			this.has_field.set_field (field_idx, true);
+			this.serialize.write_integer (integer, tag);
 		}
 
-		protected void write_string(string str){
-		
+		protected void write_string(string str, int tag, int field_idx){
+			this.has_field.set_field (field_idx, true);
+			this.serialize.write_string (str, tag);
 		}
 
-		protected void write_boolean(bool b){
-		
+		protected void write_boolean(bool b, int tag, int field_idx){
+			this.has_field.set_field (field_idx, true);
+			this.serialize.write_boolean (b, tag);
 		}
 
-		protected void write_obj(SprotoTypeBase obj){
-			
-		}
-
-		protected void encode(MemoryStream stream){
-
+		protected void write_obj(SprotoTypeBase obj, int tag, int field_idx){
+			this.has_field.set_field (field_idx, true);
+			this.serialize.write_obj (obj, tag);
 		}
 
 
@@ -47,8 +48,8 @@ namespace Sproto {
 			// clear has slot
 			this.has_field.clear_field ();
 
-			// clear buffer
-			this.encode_buffer.Seek (0, SeekOrigin.Begin);
+			// clear serialize
+			this.serialize.clear ();
 		}
 	}
 

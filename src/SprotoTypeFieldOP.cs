@@ -4,7 +4,7 @@ namespace Sproto {
 
 	public class SprotoTypeFieldOP {
 
-		static int slot_bits_size = sizeof(UInt32)*8;
+		static readonly int slot_bits_size = sizeof(UInt32)*8;
 		public UInt32[] has_bits;
 
 		public SprotoTypeFieldOP (int max_field_count) {
