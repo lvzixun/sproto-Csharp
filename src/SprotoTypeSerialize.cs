@@ -5,11 +5,6 @@ using System.Collections.Generic;
 namespace Sproto
 {
 	public class SprotoTypeSerialize {
-		static readonly int sizeof_header = 2;
-		static readonly int sizeof_length = 4;
-		static readonly int sizeof_field  = 2;
-		static readonly int encode_max_size = 0x1000000;
-
 		private byte[] header;
 		private int header_idx = 2;
 
@@ -20,7 +15,10 @@ namespace Sproto
 
 
 		public SprotoTypeSerialize (int max_field_count) {
-			this.header = new byte[sizeof_header + max_field_count * sizeof_field];
+			this.header = new byte[
+				SprotoTypeSize.sizeof_header + 
+				max_field_count * SprotoTypeSize.sizeof_field];
+
 			this.data = new MemoryStream ();
 		}
 
@@ -90,14 +88,14 @@ namespace Sproto
 			this.fill_size (sizeof(UInt32));
 
 			this.write_uint32 (v);
-			return sizeof_length + sizeof(UInt32);
+			return SprotoTypeSize.sizeof_length + sizeof(UInt32);
 		}
 
 		private int encode_uint64(UInt64 v) {
 			this.fill_size (sizeof(UInt64));
 
 			this.write_uint64 (v);
-			return sizeof_length + sizeof(UInt64);
+			return SprotoTypeSize.sizeof_length + sizeof(UInt64);
 		}
 
 		private int encode_string(string str){
@@ -106,7 +104,7 @@ namespace Sproto
 			byte[] s = System.Text.Encoding.UTF8.GetBytes (str);
 			this.data.Write (s, 0, s.Length);
 
-			return sizeof_length + str.Length;
+			return SprotoTypeSize.sizeof_length + str.Length;
 		}
 			
 		private int encode_struct(SprotoTypeBase obj){
@@ -115,7 +113,7 @@ namespace Sproto
 			this.fill_size (data.Length);
 			this.data.Write (data, 0, data.Length);
 
-			return sizeof_length + data.Length;
+			return SprotoTypeSize.sizeof_length + data.Length;
 		}
 
 
@@ -158,7 +156,7 @@ namespace Sproto
 				return;
 
 			long sz_pos = this.data.Position;
-			this.data.Seek (sz_pos + sizeof_length, SeekOrigin.Begin);
+			this.data.Seek (sz_pos + SprotoTypeSize.sizeof_length, SeekOrigin.Begin);
 
 			long begin_pos = this.data.Position;
 			int intlen = sizeof(UInt32);
@@ -238,7 +236,7 @@ namespace Sproto
 			// write size length
 			int sz = 0;
 			foreach (string v in str_list) {
-				sz += sizeof_length + v.Length;
+				sz += SprotoTypeSize.sizeof_length + v.Length;
 			}
 			this.fill_size (sz);
 
@@ -255,20 +253,20 @@ namespace Sproto
 			this.encode_struct (obj);
 			this.write_tag (tag, 0);
 		}
-
+			
 		public void write_obj(List<SprotoTypeBase> obj_list, int tag) {
 			if (obj_list == null || obj_list.Count <= 0)
 				return;
 
 			long sz_pos = this.data.Position;
-			this.data.Seek (sizeof_length, SeekOrigin.Current);
+			this.data.Seek (SprotoTypeSize.sizeof_length, SeekOrigin.Current);
 
 			foreach (SprotoTypeBase v in obj_list) {
 				this.encode_struct (v);
 			}
 
 			long cur_pos = this.data.Position;
-			int sz = (int)(cur_pos - sz_pos - sizeof_length);
+			int sz = (int)(cur_pos - sz_pos - SprotoTypeSize.sizeof_length);
 			this.data.Seek (sz_pos, SeekOrigin.Begin);
 			this.fill_size (sz);
 
@@ -283,8 +281,8 @@ namespace Sproto
 			int buffer_sz = this.header_idx + (int)this.data.Position;
 
 			// fix me
-			if (buffer_sz >= encode_max_size)
-				error ("object is too large (>" + encode_max_size + ")");
+			if (buffer_sz >= SprotoTypeSize.encode_max_size)
+				error ("object is too large (>" + SprotoTypeSize.encode_max_size + ")");
 
 			byte[] buffer = new byte[buffer_sz];
 
