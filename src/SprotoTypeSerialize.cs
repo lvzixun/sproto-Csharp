@@ -254,7 +254,7 @@ namespace Sproto
 			this.write_tag (tag, 0);
 		}
 			
-		public void write_obj(List<SprotoTypeBase> obj_list, int tag) {
+		public void write_obj<T>(List<T> obj_list, int tag) where T :SprotoTypeBase {
 			if (obj_list == null || obj_list.Count <= 0)
 				return;
 
