@@ -147,35 +147,32 @@ local function _write_encode_field(field, idx, stream, deep)
   stream:write("}\n", deep)
 end
 
+
+local _read_func = {
+  string = "read_string",
+  integer = "read_integer",
+  boolean = "read_boolean",
+}
 local function _write_read_field(field, stream, deep)
   local typename = field.typename
   local is_array = field.array
   local tag = field.tag
   local name = field.name
 
-  if typename == "string" or typename == "integer" or 
-     typename == "boolean" then
-     local func_name = "read_"..typename
-     if is_array then func_name = func_name.."_list" end
+  local func_name = _read_func[typename]
 
-      stream:write("case "..(tag)..":", deep)
-      stream:write("this."..name.." = base.deserialize."..func_name.." ();", deep+1)
-      stream:write("break;", deep+1)
+  stream:write("case "..(tag)..":", deep)
+  if func_name then
+    if is_array then func_name = func_name.."_list" end
+    stream:write("this."..name.." = base.deserialize."..func_name.." ();", deep+1)
 
-  else 
-    stream:write("case "..(tag)..": {", deep)
-      if is_array then
-        stream:write("List<byte[]> list = base.deserialize.read_obj_list();", deep+1)
-        stream:write(sformat("this.%s = new List<%s> ();", name, typename), deep+1)
-        stream:write("for (int i=0; i< list.Count; i++) {", deep+1)
-        stream:write(sformat("this.%s.Add (new %s (list[i]));", name, typename), deep+2)
-        stream:write("}", deep+1)
-      else
-        stream:write(sformat("this.%s = new %s (base.deserialize.read_obj ());", name, typename), deep+1)
-      end
-    stream:write("}break;", deep+1)
+  else
+    func_name = "read_obj"
+    if is_array then func_name = func_name.."_list" end
+    stream:write("this."..name.." = base.deserialize."..func_name.."<"..typename..">".." ();", deep+1)
 
   end
+  stream:write("break;", deep+1)
 end
 
 
@@ -188,17 +185,17 @@ local function dump_class(class_info, stream, deep)
 
   stream:write("public class "..class_name.." : SprotoTypeBase {", deep)
   
-  -- write max_field_count
+  -- max_field_count
   deep = deep + 1;
   stream:write("private static int max_field_count = "..(max_field_count)..";", deep)
 
-  -- write internal class
+  -- internal class
   stream:write("", deep)
   for i=1,#internal_class do
     dump_class(internal_class[i], stream, deep)
   end
 
-  -- write property
+  -- property
   stream:write("", deep)
   for i=1,#sproto_type do
     local field = sproto_type[i]
@@ -208,32 +205,45 @@ local function dump_class(class_info, stream, deep)
 
     stream:write(sformat("private %s _%s; // tag %d", type, name, tag), deep)    
     stream:write(sformat("public %s %s {", type, name), deep)
-    stream:write(sformat("get { return _%s; }", name), deep+1)
-    stream:write(sformat("set { base.has_field.set_field (%d, true); _%s = value; }", i, name), deep+1)
+      stream:write(sformat("get { return _%s; }", name), deep+1)
+      stream:write(sformat("set { base.has_field.set_field (%d, true); _%s = value; }", i, name), deep+1)
     stream:write("}\n", deep)
   end
 
-  -- wirte default constructor function
+  -- default constructor function
   stream:write("public "..class_name.." () : base(max_field_count) {}\n", deep)
 
-  -- write decode constructor function
-  stream:write("public "..class_name.." (byte[] buffer) : base(max_field_count, buffer) {", deep)
-  stream:write("int tag = -1;", deep+1)
-  stream:write("while (-1 != (tag = base.deserialize.read_tag ())) {", deep+1)
-    stream:write("switch (tag) {", deep+2)
-    for i=1,#sproto_type do
-      local field = sproto_type[i]
-      _write_read_field(field, stream, deep+2)
-    end
-    stream:write("default:", deep+2)
-      stream:write("base.deserialize.read_unknow_data ();", deep+3)
-      stream:write("break;", deep+3)
-    stream:write("}", deep+2)
-  stream:write("}", deep+1)
+  -- init function
+  stream:write("public override void init (byte[] buffer) {", deep)
+    stream:write("base.init (buffer);", deep+1)
+    stream:write("this.decode (buffer);", deep+1)
   stream:write("}\n", deep)
 
 
-  -- write encode function 
+  -- constructor function
+  stream:write("public "..class_name.." (byte[] buffer) : base(max_field_count, buffer) {", deep)
+    stream:write("this.decode (buffer);", deep+1)
+  stream:write("}\n", deep)
+
+
+  -- decode function
+  stream:write("protected override void decode (byte[] buffer) {", deep)
+    stream:write("int tag = -1;", deep+1)
+    stream:write("while (-1 != (tag = base.deserialize.read_tag ())) {", deep+1)
+      stream:write("switch (tag) {", deep+2)
+      for i=1,#sproto_type do
+        local field = sproto_type[i]
+        _write_read_field(field, stream, deep+2)
+      end
+      stream:write("default:", deep+2)
+        stream:write("base.deserialize.read_unknow_data ();", deep+3)
+        stream:write("break;", deep+3)
+      stream:write("}", deep+2)
+    stream:write("}", deep+1)
+  stream:write("}\n", deep)
+
+
+  -- encode function 
   stream:write("public override byte[] encode () {", deep)
     for i=1,#sproto_type do
       local field = sproto_type[i]

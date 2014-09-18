@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 
 namespace Sproto {
-	public class SprotoTypeBase {
+	public abstract class SprotoTypeBase {
 		protected SprotoTypeFieldOP has_field;
 		protected SprotoTypeSerialize serialize;
 		protected SprotoTypeDeserialize deserialize;
@@ -14,15 +14,18 @@ namespace Sproto {
 			this.serialize = new SprotoTypeSerialize (max_field_count);
 		}
 
+		public virtual void init (byte[] buffer){
+			this.clear ();
+			this.deserialize = new SprotoTypeDeserialize (buffer);
+		}
 
 		public SprotoTypeBase(int max_field_count, byte[] buffer) {
 			this.has_field = new SprotoTypeFieldOP (max_field_count);
 			this.deserialize = new SprotoTypeDeserialize (buffer);
 		}
 
-		public virtual byte[] encode () {
-			throw new Exception ("no encode function.");
-		}
+		public abstract byte[] encode ();
+		protected abstract void decode (byte[] buffer);
 
 		public byte[] pack(byte[] buffer) {
 			return null;

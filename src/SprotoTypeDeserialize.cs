@@ -201,18 +201,20 @@ namespace Sproto
 		}
 
 
-		public byte[] read_obj() {
+		public T read_obj<T>() where T : SprotoTypeBase, new() {
 			UInt32 sz = this.read_dword ();
 			byte[] buffer = new byte[sz];
 			this.data.Read (buffer, 0, buffer.Length);
 
-			return buffer;
+			T obj = new T ();
+			obj.init (buffer);
+			return obj;
 		}
 
-		public List<byte[]> read_obj_list() {
+		public List<T> read_obj_list<T>() where T : SprotoTypeBase, new() {
 			UInt32 sz = this.read_array_size ();
 
-			List<byte[]> obj_list = new List<byte[]> ();
+			List<T> obj_list = new List<T> ();
 			for (UInt32 i = 0; sz > 0; i++) {
 				if (sz < SprotoTypeSize.sizeof_length) {
 					SprotoTypeSize.error ("error array size.");
@@ -227,7 +229,10 @@ namespace Sproto
 
 				byte[] buffer = new byte[hsz];
 				this.data.Read (buffer, 0, buffer.Length);
-				obj_list.Add (buffer);
+
+				T obj = new T();
+				obj.init (buffer);
+				obj_list.Add (obj);
 
 				sz -= hsz;
 			}
