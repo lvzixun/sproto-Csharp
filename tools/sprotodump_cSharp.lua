@@ -143,7 +143,7 @@ local function _write_encode_field(field, idx, stream, deep)
   local func_name = _write_func[typename] or "write_obj"
 
   stream:write(sformat("if (base.has_field.has_field (%d)) {", idx), deep)
-  stream:write(sformat("base.serialize.%s (this.%s, %d);", func_name, name, idx), deep+1)
+  stream:write(sformat("base.serialize.%s (this.%s, %d);", func_name, name, tag), deep+1)
   stream:write("}\n", deep)
 end
 
@@ -206,7 +206,7 @@ local function dump_class(class_info, stream, deep)
     stream:write(sformat("private %s _%s; // tag %d", type, name, tag), deep)    
     stream:write(sformat("public %s %s {", type, name), deep)
       stream:write(sformat("get { return _%s; }", name), deep+1)
-      stream:write(sformat("set { base.has_field.set_field (%d, true); _%s = value; }", i, name), deep+1)
+      stream:write(sformat("set { base.has_field.set_field (%d, true); _%s = value; }", i-1, name), deep+1)
     stream:write("}\n", deep)
   end
 
@@ -247,7 +247,7 @@ local function dump_class(class_info, stream, deep)
   stream:write("public override byte[] encode () {", deep)
     for i=1,#sproto_type do
       local field = sproto_type[i]
-      _write_encode_field(field, i, stream, deep+1)
+      _write_encode_field(field, i-1, stream, deep+1)
     end
     stream:write("byte[] buffer = base.serialize.encode ();", deep+1)
     stream:write("base.serialize.clear ();\n", deep+1)
