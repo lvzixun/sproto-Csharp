@@ -267,8 +267,8 @@ using Sproto;
 using System.Collections.Generic;
 ]]
 
-local function dump(text, name)
-  local namespace = name or "SprotoTypeInput"
+local function parse(text, name, namespace)
+  namespace = namespace or "SprotoTypeDefault"
 
   local ast = parse_core.gen_ast(text)
   local class = gen_class(ast)
@@ -327,11 +327,11 @@ local ast = parse_core.gen_ast(str)
 -- print_r(gen_class(ast))
 
 -- print("\n\n======= c# =========")
-print(dump(str))
+-- print(parse(str))
 
 
 return {
-  dump = dump
+  parse = parse
 }
 
 
