@@ -292,44 +292,6 @@ local function parse(text, name, namespace)
 end
 
 
-
--- for test
-local str = [[
-.Test1 {
-
-  .ITest3 {
-    .ITest4 {
-      iivar1 9 : string
-    }
-
-    ivar1 3: ITest4
-    var2 2: *string
-  }
-
-  var1 0: integer
-  var2 5: string
-  var4 2: boolean 
-
-  var6 6: *ITest3
-  var7 4: ITest3.ITest4
-}
-
-.Test2 {
-  
-}
-]]
-
-local ast = parse_core.gen_ast(str)
--- print("===== SprotoType =====")
--- print_r(ast)
-
--- print("\n\n===== class ========")
--- print_r(gen_class(ast))
-
--- print("\n\n======= c# =========")
--- print(parse(str))
-
-
 return {
   parse = parse
 }
