@@ -230,21 +230,15 @@ local function dump_class(class_info, stream, deep)
   -- default constructor function
   stream:write("public "..class_name.." () : base(max_field_count) {}\n", deep)
 
-  -- init function
-  stream:write("public override void init (byte[] buffer) {", deep)
-    stream:write("base.init (buffer);", deep+1)
-    stream:write("this.decode (buffer);", deep+1)
-  stream:write("}\n", deep)
-
 
   -- constructor function
   stream:write("public "..class_name.." (byte[] buffer) : base(max_field_count, buffer) {", deep)
-    stream:write("this.decode (buffer);", deep+1)
+    stream:write("this.decode ();", deep+1)
   stream:write("}\n", deep)
 
 
   -- decode function
-  stream:write("protected override void decode (byte[] buffer) {", deep)
+  stream:write("protected override void decode () {", deep)
     stream:write("int tag = -1;", deep+1)
     stream:write("while (-1 != (tag = base.deserialize.read_tag ())) {", deep+1)
       stream:write("switch (tag) {", deep+2)

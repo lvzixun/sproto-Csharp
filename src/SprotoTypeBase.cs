@@ -16,9 +16,16 @@ namespace Sproto {
 			this.extract = new SprotoTypeExtract ();
 		}
 
-		public virtual void init (byte[] buffer){
+		public void init (byte[] buffer){
 			this.clear ();
 			this.deserialize = new SprotoTypeDeserialize (buffer);
+			this.decode ();
+		}
+
+		public void init (SprotoTypeReader reader) {
+			this.clear ();
+			this.deserialize = new SprotoTypeDeserialize (reader);
+			this.decode ();
 		}
 
 		public SprotoTypeBase(int max_field_count, byte[] buffer) {
@@ -28,7 +35,7 @@ namespace Sproto {
 		}
 
 		public abstract byte[] encode ();
-		protected abstract void decode (byte[] buffer);
+		protected abstract void decode ();
 
 		public byte[] pack(byte[] buffer) {
 			return this.extract.pack (buffer);

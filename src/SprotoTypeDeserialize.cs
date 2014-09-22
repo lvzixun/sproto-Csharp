@@ -6,7 +6,7 @@ namespace Sproto
 {
 	public class SprotoTypeDeserialize {
 
-		private MemoryStream data;
+		private SprotoTypeReader reader;
 		private long begin_data_pos;
 		private long cur_field_pos;
 
@@ -15,17 +15,28 @@ namespace Sproto
 		private int value;
 
 		public SprotoTypeDeserialize (byte[] data) {
-			this.data = new MemoryStream (data);
+			this.reader = new SprotoTypeReader (data, 0, data.LongLength);
+			this.init ();
+		}
+
+		public SprotoTypeDeserialize(SprotoTypeReader reader) {
+			this.reader = reader;
+			this.init ();
+		}
+
+
+		private void init() {
 			this.fn = this.read_word ();
 
-			this.begin_data_pos = SprotoTypeSize.sizeof_header + this.fn * SprotoTypeSize.sizeof_field;
-			this.cur_field_pos = this.data.Position;
+			long header_length = SprotoTypeSize.sizeof_header + this.fn * SprotoTypeSize.sizeof_field;
+			this.begin_data_pos = header_length;
+			this.cur_field_pos = this.reader.Position;
 
-			if (this.data.Length < this.begin_data_pos) {
+			if (this.reader.Length < header_length) {
 				SprotoTypeSize.error ("invalid decode header.");
 			}
 
-			this.data.Seek (this.begin_data_pos, SeekOrigin.Begin);
+			this.reader.Seek (this.begin_data_pos);
 		}
 
 		private UInt64 expand64(UInt32 v) {
@@ -37,15 +48,15 @@ namespace Sproto
 		}
 
 		private int read_word() {
-			return (int)this.data.ReadByte () |
-				((int)this.data.ReadByte ()) << 8;
+			return (int)this.reader.ReadByte () |
+				((int)this.reader.ReadByte ()) << 8;
 		}
 
 		private UInt32 read_dword() {
-			return 	(UInt32)this.data.ReadByte ()    |
-				((UInt32)this.data.ReadByte ()) << 8 |
-				((UInt32)this.data.ReadByte ()) << 16|
-				((UInt32)this.data.ReadByte ()) << 24;
+			return 	(UInt32)this.reader.ReadByte ()    |
+				((UInt32)this.reader.ReadByte ()) << 8 |
+				((UInt32)this.reader.ReadByte ()) << 16|
+				((UInt32)this.reader.ReadByte ()) << 24;
 		}
 
 		private UInt32 read_array_size() {
@@ -61,16 +72,16 @@ namespace Sproto
 
 
 		public int read_tag() {
-			long pos = this.data.Position;
-			this.data.Seek (this.cur_field_pos, SeekOrigin.Begin);
+			long pos = this.reader.Position;
+			this.reader.Seek (this.cur_field_pos);
 
-			while(this.data.Position < this.begin_data_pos){
+			while(this.reader.Position < this.begin_data_pos){
 				this.tag++;
 				int value = this.read_word ();
 
 				if( (value & 1) == 0) {
-					this.cur_field_pos = this.data.Position;
-					this.data.Seek(pos, SeekOrigin.Begin);
+					this.cur_field_pos = this.reader.Position;
+					this.reader.Seek(pos);
 					this.value = value/2 - 1;
 					return this.tag;
 				}
@@ -79,7 +90,7 @@ namespace Sproto
 			}
 
 
-			this.data.Seek(pos, SeekOrigin.Begin);
+			this.reader.Seek(pos);
 			return -1;
 		}
 
@@ -109,7 +120,7 @@ namespace Sproto
 			List<Int64> integer_list = null;
 
 			UInt32 sz = this.read_array_size ();
-			int len = this.data.ReadByte ();
+			int len = this.reader.ReadByte ();
 			sz--;
 
 			if (len == sizeof(UInt32)) {
@@ -158,7 +169,7 @@ namespace Sproto
 
 			List<bool> boolean_list = new List<bool> ();
 			for (int i = 0; i < sz; i++) {
-				bool v = (this.data.ReadByte() == (byte)0)?(false):(true);
+				bool v = (this.reader.ReadByte() == (byte)0)?(false):(true);
 				boolean_list.Add (v);
 			}
 
@@ -169,7 +180,7 @@ namespace Sproto
 		public string read_string() {
 			UInt32 sz = this.read_dword ();
 			byte[] buffer = new byte[sz];
-			this.data.Read (buffer, 0, buffer.Length);
+			this.reader.Read (buffer, 0, buffer.Length);
 			return System.Text.Encoding.UTF8.GetString (buffer);
 		}
 
@@ -190,7 +201,7 @@ namespace Sproto
 				}
 
 				byte[] buffer = new byte[hsz];
-				this.data.Read (buffer, 0, buffer.Length);
+				this.reader.Read (buffer, 0, buffer.Length);
 				string v = System.Text.Encoding.UTF8.GetString (buffer);
 
 				string_list.Add (v);
@@ -203,11 +214,12 @@ namespace Sproto
 
 		public T read_obj<T>() where T : SprotoTypeBase, new() {
 			UInt32 sz = this.read_dword ();
-			byte[] buffer = new byte[sz];
-			this.data.Read (buffer, 0, buffer.Length);
+
+			SprotoTypeReader reader = new SprotoTypeReader (this.reader.Buffer, this.reader.Offset, sz);
+			this.reader.Seek (this.reader.Position + sz);
 
 			T obj = new T ();
-			obj.init (buffer);
+			obj.init (reader);
 			return obj;
 		}
 
@@ -227,11 +239,11 @@ namespace Sproto
 					SprotoTypeSize.error ("error array object.");
 				}
 
-				byte[] buffer = new byte[hsz];
-				this.data.Read (buffer, 0, buffer.Length);
+				SprotoTypeReader reader = new SprotoTypeReader (this.reader.Buffer, this.reader.Offset, hsz);
+				this.reader.Seek (this.reader.Position + hsz);
 
 				T obj = new T();
-				obj.init (buffer);
+				obj.init (reader);
 				obj_list.Add (obj);
 
 				sz -= hsz;
@@ -245,13 +257,13 @@ namespace Sproto
 		public void read_unknow_data() {
 			if (this.value < 0) {
 				UInt32 sz = this.read_dword ();
-				this.data.Seek (sz, SeekOrigin.Current);
+				this.reader.Seek (sz + this.reader.Position);
 			}
 		}
 
 
 		public void clear() {
-			this.data.Seek (0, SeekOrigin.Begin);
+			this.reader.Seek (0);
 		}
 	}
 }
