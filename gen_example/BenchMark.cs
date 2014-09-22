@@ -3,9 +3,9 @@ using MemberType;
 
 namespace sprotoCsharp
 {
-	public class BeachMark
+	public class BenchMark
 	{
-		public BeachMark ()
+		public BenchMark ()
 		{
 
 			AddressBook address = new AddressBook ();
