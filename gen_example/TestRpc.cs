@@ -15,16 +15,11 @@ namespace TestRpcType{
 			
 			public request () : base(max_field_count) {}
 
-			public override void init (byte[] buffer) {
-				base.init (buffer);
-				this.decode (buffer);
-			}
-
 			public request (byte[] buffer) : base(max_field_count, buffer) {
-				this.decode (buffer);
+				this.decode ();
 			}
 
-			protected override void decode (byte[] buffer) {
+			protected override void decode () {
 				int tag = -1;
 				while (-1 != (tag = base.deserialize.read_tag ())) {
 					switch (tag) {
@@ -47,16 +42,11 @@ namespace TestRpcType{
 		
 		public blackhole () : base(max_field_count) {}
 
-		public override void init (byte[] buffer) {
-			base.init (buffer);
-			this.decode (buffer);
-		}
-
 		public blackhole (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode (buffer);
+			this.decode ();
 		}
 
-		protected override void decode (byte[] buffer) {
+		protected override void decode () {
 			int tag = -1;
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {
@@ -91,16 +81,11 @@ namespace TestRpcType{
 
 			public response () : base(max_field_count) {}
 
-			public override void init (byte[] buffer) {
-				base.init (buffer);
-				this.decode (buffer);
-			}
-
 			public response (byte[] buffer) : base(max_field_count, buffer) {
-				this.decode (buffer);
+				this.decode ();
 			}
 
-			protected override void decode (byte[] buffer) {
+			protected override void decode () {
 				int tag = -1;
 				while (-1 != (tag = base.deserialize.read_tag ())) {
 					switch (tag) {
@@ -136,16 +121,11 @@ namespace TestRpcType{
 
 		public foo () : base(max_field_count) {}
 
-		public override void init (byte[] buffer) {
-			base.init (buffer);
-			this.decode (buffer);
-		}
-
 		public foo (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode (buffer);
+			this.decode ();
 		}
 
-		protected override void decode (byte[] buffer) {
+		protected override void decode () {
 			int tag = -1;
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {
@@ -187,16 +167,11 @@ namespace TestRpcType{
 
 			public request () : base(max_field_count) {}
 
-			public override void init (byte[] buffer) {
-				base.init (buffer);
-				this.decode (buffer);
-			}
-
 			public request (byte[] buffer) : base(max_field_count, buffer) {
-				this.decode (buffer);
+				this.decode ();
 			}
 
-			protected override void decode (byte[] buffer) {
+			protected override void decode () {
 				int tag = -1;
 				while (-1 != (tag = base.deserialize.read_tag ())) {
 					switch (tag) {
@@ -235,16 +210,11 @@ namespace TestRpcType{
 
 			public response () : base(max_field_count) {}
 
-			public override void init (byte[] buffer) {
-				base.init (buffer);
-				this.decode (buffer);
-			}
-
 			public response (byte[] buffer) : base(max_field_count, buffer) {
-				this.decode (buffer);
+				this.decode ();
 			}
 
-			protected override void decode (byte[] buffer) {
+			protected override void decode () {
 				int tag = -1;
 				while (-1 != (tag = base.deserialize.read_tag ())) {
 					switch (tag) {
@@ -280,16 +250,11 @@ namespace TestRpcType{
 
 		public foobar () : base(max_field_count) {}
 
-		public override void init (byte[] buffer) {
-			base.init (buffer);
-			this.decode (buffer);
-		}
-
 		public foobar (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode (buffer);
+			this.decode ();
 		}
 
-		protected override void decode (byte[] buffer) {
+		protected override void decode () {
 			int tag = -1;
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {
@@ -334,16 +299,11 @@ namespace TestRpcType{
 
 		public package () : base(max_field_count) {}
 
-		public override void init (byte[] buffer) {
-			base.init (buffer);
-			this.decode (buffer);
-		}
-
 		public package (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode (buffer);
+			this.decode ();
 		}
 
-		protected override void decode (byte[] buffer) {
+		protected override void decode () {
 			int tag = -1;
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {

@@ -18,16 +18,11 @@ namespace MemberType{
 
 		public AddressBook () : base(max_field_count) {}
 
-		public override void init (byte[] buffer) {
-			base.init (buffer);
-			this.decode (buffer);
-		}
-
 		public AddressBook (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode (buffer);
+			this.decode ();
 		}
 
-		protected override void decode (byte[] buffer) {
+		protected override void decode () {
 			int tag = -1;
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {
@@ -75,16 +70,11 @@ namespace MemberType{
 
 			public PhoneNumber () : base(max_field_count) {}
 
-			public override void init (byte[] buffer) {
-				base.init (buffer);
-				this.decode (buffer);
-			}
-
 			public PhoneNumber (byte[] buffer) : base(max_field_count, buffer) {
-				this.decode (buffer);
+				this.decode ();
 			}
 
-			protected override void decode (byte[] buffer) {
+			protected override void decode () {
 				int tag = -1;
 				while (-1 != (tag = base.deserialize.read_tag ())) {
 					switch (tag) {
@@ -145,16 +135,11 @@ namespace MemberType{
 
 		public Person () : base(max_field_count) {}
 
-		public override void init (byte[] buffer) {
-			base.init (buffer);
-			this.decode (buffer);
-		}
-
 		public Person (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode (buffer);
+			this.decode ();
 		}
 
-		protected override void decode (byte[] buffer) {
+		protected override void decode () {
 			int tag = -1;
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {

@@ -33,16 +33,11 @@ namespace TestAllType{
 
 			public Nest () : base(max_field_count) {}
 
-			public override void init (byte[] buffer) {
-				base.init (buffer);
-				this.decode (buffer);
-			}
-
 			public Nest (byte[] buffer) : base(max_field_count, buffer) {
-				this.decode (buffer);
+				this.decode ();
 			}
 
-			protected override void decode (byte[] buffer) {
+			protected override void decode () {
 				int tag = -1;
 				while (-1 != (tag = base.deserialize.read_tag ())) {
 					switch (tag) {
@@ -134,16 +129,11 @@ namespace TestAllType{
 
 		public Foobar () : base(max_field_count) {}
 
-		public override void init (byte[] buffer) {
-			base.init (buffer);
-			this.decode (buffer);
-		}
-
 		public Foobar (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode (buffer);
+			this.decode ();
 		}
 
-		protected override void decode (byte[] buffer) {
+		protected override void decode () {
 			int tag = -1;
 			while (-1 != (tag = base.deserialize.read_tag ())) {
 				switch (tag) {
