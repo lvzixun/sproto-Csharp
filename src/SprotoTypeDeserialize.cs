@@ -263,6 +263,9 @@ namespace Sproto
 
 
 		public void clear() {
+			this.fn = 0;
+			this.tag = -1;
+			this.value = 0;
 			this.reader.Seek (0);
 		}
 	}
