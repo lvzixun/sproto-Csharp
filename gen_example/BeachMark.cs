@@ -42,11 +42,11 @@ namespace sprotoCsharp
 			byte[] data = address.encode ();
 
 			double b = this.cur_mseconds ();
-			for (int i = 0; i < 1000; i++) {
+			for (int i = 0; i < 1000000; i++) {
 				address.init (data);
 			}
 			double e = this.cur_mseconds ();
-			Console.WriteLine ("totla: " + (e - b)/1000  +"s");
+			Console.WriteLine ("total: " + (e - b)/1000  +"s");
 		}
 
 
