@@ -121,8 +121,8 @@ namespace TestAllType{
 			set { base.has_field.set_field (6, true); _g = value; }
 		}
 
-		private Foobar _h; // tag 7
-		public Foobar h {
+		private List<Foobar> _h; // tag 7
+		public List<Foobar> h {
 			get { return _h; }
 			set { base.has_field.set_field (7, true); _h = value; }
 		}
@@ -159,7 +159,7 @@ namespace TestAllType{
 					this.g = base.deserialize.read_boolean_list ();
 					break;
 				case 7:
-					this.h = base.deserialize.read_obj<Foobar> ();
+					this.h = base.deserialize.read_obj_list<Foobar> ();
 					break;
 				default:
 					base.deserialize.read_unknow_data ();
