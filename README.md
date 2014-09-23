@@ -83,8 +83,8 @@ namespace TestProtocol{
   public class Foobar {
     public const int tag = 1;
 
-    public TestRpcType.foobar.request request;
-    public TestRpcType.foobar.response response;
+    public TestType.foobar.request request;
+    public TestType.foobar.response response;
   }
 
 }
