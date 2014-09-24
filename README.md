@@ -106,6 +106,7 @@ namespace TestProtocol{
 ## benchmark
 
 in my i5-3470 @3.20GHz :
+
 | library | encode 1M times | decode 1M times |
 |:-------:|:---------------:|:---------------:|
 | sproto-Csharp | 4.773s         | 6.480s     |
