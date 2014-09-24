@@ -92,9 +92,12 @@ namespace TestProtocol{
 
 
 ## sprotodump
-[sprotodump](https://github.com/lvzixun/sproto-Csharp/blob/master/tools/sprotodump.lua) used to generate C# code or `.spb` binary file.
+[sprotodump](https://github.com/lvzixun/sproto-Csharp/blob/master/tools/sprotodump.lua) used to generate C# code or `.spb` binary file,
 
-option commands:
+#### require
+  [lpeg](http://www.inf.puc-rio.br/~roberto/lpeg/)
+
+#### option commands
 ```
   -cs       generate c# code, is default option.
   -spb      generate `.spb` binary file. 
