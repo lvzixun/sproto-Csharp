@@ -103,7 +103,13 @@ namespace TestProtocol{
   -spb      generate `.spb` binary file. 
 ```
 
+## benchmark
 
+| library | encode 1M times | decode 1M times |
+|:-------:|:---------------:|:---------------:|
+| sproto-Csharp | 4.773s         | 6.480s     |
+| sproto-Csharp(unpack) | 2.550s | 5.207s     |
+| [protobuf-net](https://github.com/mgravell/protobuf-net) | 8.768s | 10.825s |
 
 
 
