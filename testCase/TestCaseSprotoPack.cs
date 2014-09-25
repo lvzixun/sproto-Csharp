@@ -3,14 +3,14 @@ using Sproto;
 
 namespace sprotoCsharp
 {
-	public class TestCaseSprotoExtract : TestCaseBase
+	public class TestCaseSprotoPack : TestCaseBase
 	{
-		public TestCaseSprotoExtract ()
+		public TestCaseSprotoPack ()
 		{
 		}
 
 		public override void run() {
-			SprotoTypeExtract extract = new SprotoTypeExtract ();
+			SprotoPack extract = new SprotoPack ();
 
 			byte[] data = new byte[] {
 				0X08, 0X00, 0X00, 0X00, 0X00, 0X00, 0X04, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00,

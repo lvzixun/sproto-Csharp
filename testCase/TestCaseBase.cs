@@ -12,7 +12,6 @@ namespace sprotoCsharp
 
 		abstract public void run();
 	
-		[Conditional("DEBUG")]
 		public static void assert(bool condition){
 			if (!condition)
 				throw new Exception ();

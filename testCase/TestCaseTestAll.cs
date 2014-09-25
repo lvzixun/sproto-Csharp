@@ -64,7 +64,9 @@ namespace sprotoCsharp
 			};
 			assert (data, result_data);
 
-			byte[] pack_data = obj.pack (data);
+			Sproto.SprotoPack spack = new SprotoPack ();
+
+			byte[] pack_data = spack.pack (data);
 			byte[] result_pack_data = new byte[] {
 				0X41, 0X08, 0X04, 0X00, 0Xc4, 0X05, 0X68, 0X65, 0X8f, 0X6c, 0X6c, 0X6f, 0X04,
 				0X40, 0X8b, 0X42, 0X0f, 0X1b, 0X04, 0X22, 0X01, 0X05, 0Xe2, 0X05, 0X77, 0X6f,
@@ -78,7 +80,7 @@ namespace sprotoCsharp
 			};
 			assert (pack_data, result_pack_data);
 
-			byte[] unpack_data = obj.unpack (pack_data);
+			byte[] unpack_data = spack.unpack (pack_data);
 			byte[] result_unpack_data = new byte[] {
 				0X08, 0X00, 0X00, 0X00, 0X00, 0X00, 0X04, 0X00, 0X00, 0X00, 0X00, 0X00, 0X00,
 				0X00, 0X00, 0X00, 0X00, 0X00, 0X05, 0X00, 0X00, 0X00, 0X68, 0X65, 0X6c, 0X6c,

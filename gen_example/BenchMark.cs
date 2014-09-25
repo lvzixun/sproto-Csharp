@@ -40,15 +40,18 @@ namespace sprotoCsharp
 			address.person.Add (person1);
 
 			byte[] data = address.encode ();
-			byte[] pack_data = address.pack (data);
+
+			Sproto.SprotoPack spack = new Sproto.SprotoPack ();
+
+			byte[] pack_data = spack.pack (data);
 
 			double b = this.cur_mseconds ();
 			for (int i = 0; i < 1000000; i++) {
-				address.init (data);
+//				address.init (data);
 //				data = address.encode ();
-//				address.pack (data);
+				spack.pack (data);
 
-//				byte[] unpack_data = address.unpack (pack_data);
+//				byte[] unpack_data = spack.unpack (pack_data);
 //				address.init (unpack_data);
 			}
 			double e = this.cur_mseconds ();
