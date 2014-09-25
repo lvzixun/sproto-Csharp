@@ -57,9 +57,11 @@ person.phone.Add (num1);
 serialize and deserialize :
 ~~~~.c#
 byte[] data = address.encode ();                  // encode 
-byte[] pack_data = address.pack (data);           // pack
 
-byte[] unpack_data = address.unpack(pack_data);   // unpack
+Sproto.SprotoPack spack = new Sproto.SprotoPack ();
+byte[] pack_data = spack.pack (data);             // pack
+byte[] unpack_data = spack.unpack(pack_data);     // unpack
+
 AddressBook obj = new AddressBook(unpack_data);   // decode
 ~~~~
 
