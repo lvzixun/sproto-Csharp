@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 namespace Sproto
 {
-	public class SprotoTypeExtract
+	public class SprotoPack
 	{
 		private MemoryStream buffer;
 		private byte[] tmp;
 
-		public SprotoTypeExtract () {
+		public SprotoPack () {
 			this.buffer = new MemoryStream ();
 			this.tmp = new byte[8] {0, 0, 0, 0, 0, 0, 0, 0};
 		}
@@ -178,7 +178,7 @@ namespace Sproto
 
 
 
-		public void clear() {
+		private void clear() {
 			this.buffer.Seek (0, SeekOrigin.Begin);
 
 			for (int i = 0; i < this.tmp.Length; i++) {
