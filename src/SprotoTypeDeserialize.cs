@@ -262,6 +262,10 @@ namespace Sproto
 		}
 
 
+		public long size() {
+			return this.reader.Position;
+		}
+
 		public void clear() {
 			this.fn = 0;
 			this.tag = -1;

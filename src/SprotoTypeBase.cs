@@ -14,16 +14,20 @@ namespace Sproto {
 			this.serialize = new SprotoTypeSerialize (max_field_count);
 		}
 
-		public void init (byte[] buffer){
+		public long init (byte[] buffer){
 			this.clear ();
 			this.deserialize = new SprotoTypeDeserialize (buffer);
 			this.decode ();
+
+			return this.deserialize.size ();
 		}
 
-		public void init (SprotoTypeReader reader) {
+		public long init (SprotoTypeReader reader) {
 			this.clear ();
 			this.deserialize = new SprotoTypeDeserialize (reader);
 			this.decode ();
+
+			return this.deserialize.size ();
 		}
 
 		public SprotoTypeBase(int max_field_count, byte[] buffer) {
