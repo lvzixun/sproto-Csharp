@@ -14,16 +14,29 @@ namespace Sproto
 		private int tag = -1;
 		private int value;
 
+		public SprotoTypeDeserialize() {
+
+		}
+
 		public SprotoTypeDeserialize (byte[] data) {
+			this.init (data);
+		}
+
+		public SprotoTypeDeserialize(SprotoTypeReader reader) {
+			this.init (reader);
+		}
+
+		public void init(byte[] data) {
+			this.clear ();
 			this.reader = new SprotoTypeReader (data, 0, data.LongLength);
 			this.init ();
 		}
 
-		public SprotoTypeDeserialize(SprotoTypeReader reader) {
+		public void init(SprotoTypeReader reader) {
+			this.clear ();
 			this.reader = reader;
 			this.init ();
 		}
-
 
 		private void init() {
 			this.fn = this.read_word ();
@@ -270,7 +283,10 @@ namespace Sproto
 			this.fn = 0;
 			this.tag = -1;
 			this.value = 0;
-			this.reader.Seek (0);
+
+			if (this.reader != null) {
+				this.reader.Seek (0);
+			}
 		}
 	}
 }

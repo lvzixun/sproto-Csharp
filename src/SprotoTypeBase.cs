@@ -12,11 +12,12 @@ namespace Sproto {
 		public SprotoTypeBase(int max_field_count) {
 			this.has_field = new SprotoTypeFieldOP (max_field_count);
 			this.serialize = new SprotoTypeSerialize (max_field_count);
+			this.deserialize = new SprotoTypeDeserialize ();
 		}
 
 		public long init (byte[] buffer){
 			this.clear ();
-			this.deserialize = new SprotoTypeDeserialize (buffer);
+			this.deserialize.init (buffer);
 			this.decode ();
 
 			return this.deserialize.size ();
@@ -24,7 +25,7 @@ namespace Sproto {
 
 		public long init (SprotoTypeReader reader) {
 			this.clear ();
-			this.deserialize = new SprotoTypeDeserialize (reader);
+			this.deserialize.init (reader);
 			this.decode ();
 
 			return this.deserialize.size ();
@@ -44,12 +45,10 @@ namespace Sproto {
 			this.has_field.clear_field ();
 
 			// clear serialize
-			if(this.serialize != null)
-				this.serialize.clear ();
+			this.serialize.clear ();
 
 			// clear deserialize
-			if (this.deserialize != null)
-				this.deserialize.clear ();
+			this.deserialize.clear ();
 		}
 	}
 
