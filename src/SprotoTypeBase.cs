@@ -32,6 +32,7 @@ namespace Sproto {
 
 		public SprotoTypeBase(int max_field_count, byte[] buffer) {
 			this.has_field = new SprotoTypeFieldOP (max_field_count);
+			this.serialize = new SprotoTypeSerialize (max_field_count);
 			this.deserialize = new SprotoTypeDeserialize (buffer);
 		}
 
