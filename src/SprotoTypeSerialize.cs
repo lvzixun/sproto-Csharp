@@ -50,7 +50,7 @@ namespace Sproto
 				// skip tag
 				stag = (stag - 1) * 2 + 1;
 				if (stag > 0xffff)
-					error ("tag is too big.");
+					SprotoTypeSize.error ("tag is too big.");
 
 				this.write_header_record (stag);
 			}
@@ -79,7 +79,7 @@ namespace Sproto
 
 		private void fill_size(int sz) {
 			if (sz <= 0)
-				error ("fill invaild size.");
+				SprotoTypeSize.error ("fill invaild size.");
 
 			this.write_uint32 ((UInt32)sz);
 		}
@@ -118,13 +118,6 @@ namespace Sproto
 
 
 
-		private static void error(string info) {
-			throw new Exception (info);
-		}
-
-
-
-
 		// API
 		public void write_integer(Int64 integer, int tag) {
 			Int64 vh = integer >> 31;
@@ -145,7 +138,7 @@ namespace Sproto
 				sz = this.encode_uint64 (v);
 
 			} else {
-				error("invaild integer size.");
+				SprotoTypeSize.error("invaild integer size.");
 			}
 
 			this.write_tag (tag, value);
@@ -186,7 +179,7 @@ namespace Sproto
 					this.write_uint64 ((UInt64)v);
 
 				} else {
-					error ("invalid integer size(" + sz + ")");
+					SprotoTypeSize.error ("invalid integer size(" + sz + ")");
 				}
 			}
 
@@ -282,7 +275,7 @@ namespace Sproto
 
 			// fix me
 			if (buffer_sz >= SprotoTypeSize.encode_max_size)
-				error ("object is too large (>" + SprotoTypeSize.encode_max_size + ")");
+				SprotoTypeSize.error ("object is too large (>" + SprotoTypeSize.encode_max_size + ")");
 
 			byte[] buffer = new byte[buffer_sz];
 
