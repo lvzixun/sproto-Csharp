@@ -283,14 +283,32 @@ local function parse_protocol(class, namespace, stream)
     local request_type = class_info.request
     local response_type = class_info.response
 
-    stream:write(sformat("public class %s {", name), 1)
+    stream:write(sformat("public class %s : SprotoProtocolBase {", name), 1)
+      
+      -- write tag
       stream:write(sformat("public const int tag = %d;", tag), 2)
+      stream:write("public override int GetTag() {", 2)
+        stream:write("return tag;", 3)
+      stream:write("}\n", 2)
+
+      -- write request / response
       if request_type then
         stream:write(sformat("public %s request;", namespace.."Type."..request_type), 2)
       end
       if response_type then
         stream:write(sformat("public %s response;", namespace.."Type."..response_type), 2)
       end
+
+      -- write get_request / get_response
+      stream:write("\n")
+      stream:write("public override SprotoTypeBase GetRequest() {", 2)
+        stream:write("return "..(request_type and "this.request" or "null")..";", 3)
+      stream:write("}\n", 2)
+
+      stream:write("public override SprotoTypeBase GetResponse() {", 2)
+        stream:write("return "..(response_type and "this.response" or "null")..";", 3)
+      stream:write("}", 2)
+
     stream:write("}\n", 1)
   end
 

@@ -82,11 +82,23 @@ dump to c# code:
 ~~~~.c#
 namespace TestProtocol{ 
   
-  public class Foobar {
+  public class foobar : SprotoProtocolBase {
     public const int tag = 1;
+    public override int GetTag() {
+      return tag;
+    }
 
-    public TestType.foobar.request request;
-    public TestType.foobar.response response;
+    public TestRpcType.foobar.request request;
+    public TestRpcType.foobar.response response;
+
+
+    public override SprotoTypeBase GetRequest() {
+      return this.request;
+    }
+
+    public override SprotoTypeBase GetResponse() {
+      return this.response;
+    }
   }
 
 }

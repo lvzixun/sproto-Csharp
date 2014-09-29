@@ -341,24 +341,76 @@ namespace TestRpcType{
 
 
 namespace TestRpcProtocol{ 
-	public class bar {
+	public class bar : SprotoProtocolBase {
 		public const int tag = 3;
+		public override int GetTag() {
+			return tag;
+		}
+
+
+
+		public override SprotoTypeBase GetRequest() {
+			return null;
+		}
+
+		public override SprotoTypeBase GetResponse() {
+			return null;
+		}
 	}
 
-	public class blackhole {
+	public class blackhole : SprotoProtocolBase {
 		public const int tag = 4;
+		public override int GetTag() {
+			return tag;
+		}
+
 		public TestRpcType.blackhole.request request;
+
+
+		public override SprotoTypeBase GetRequest() {
+			return this.request;
+		}
+
+		public override SprotoTypeBase GetResponse() {
+			return null;
+		}
 	}
 
-	public class foo {
+	public class foo : SprotoProtocolBase {
 		public const int tag = 2;
+		public override int GetTag() {
+			return tag;
+		}
+
 		public TestRpcType.foo.response response;
+
+
+		public override SprotoTypeBase GetRequest() {
+			return null;
+		}
+
+		public override SprotoTypeBase GetResponse() {
+			return this.response;
+		}
 	}
 
-	public class foobar {
+	public class foobar : SprotoProtocolBase {
 		public const int tag = 1;
+		public override int GetTag() {
+			return tag;
+		}
+
 		public TestRpcType.foobar.request request;
 		public TestRpcType.foobar.response response;
+
+
+		public override SprotoTypeBase GetRequest() {
+			return this.request;
+		}
+
+		public override SprotoTypeBase GetResponse() {
+			return this.response;
+		}
 	}
 
 }
