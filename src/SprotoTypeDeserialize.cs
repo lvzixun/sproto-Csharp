@@ -240,6 +240,7 @@ namespace Sproto
 			UInt32 sz = this.read_array_size ();
 
 			List<T> obj_list = new List<T> ();
+			SprotoTypeReader reader = new SprotoTypeReader ();
 			for (UInt32 i = 0; sz > 0; i++) {
 				if (sz < SprotoTypeSize.sizeof_length) {
 					SprotoTypeSize.error ("error array size.");
@@ -252,7 +253,7 @@ namespace Sproto
 					SprotoTypeSize.error ("error array object.");
 				}
 
-				SprotoTypeReader reader = new SprotoTypeReader (this.reader.Buffer, this.reader.Offset, hsz);
+				reader.Init(this.reader.Buffer, this.reader.Offset, hsz);
 				this.reader.Seek (this.reader.Position + hsz);
 
 				T obj = new T();

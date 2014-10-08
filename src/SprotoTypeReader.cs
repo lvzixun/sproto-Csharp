@@ -27,6 +27,14 @@ namespace Sproto
 		}
 
 		public SprotoTypeReader (byte[] buffer, long offset, long size) {
+			this.Init(buffer, offset, size);
+		}
+
+		public SprotoTypeReader() {
+		}
+
+
+		public void Init(byte[] buffer, long offset, long size) {
 			this.begin = offset;
 			this.pos = offset;
 			this.buffer = buffer;
