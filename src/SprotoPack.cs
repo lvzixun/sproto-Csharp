@@ -15,13 +15,18 @@ namespace Sproto
 		}
 
 		private void write_ff(byte[] src, int offset, long pos, int n) {
+			int align8_n = (n+7)&(~7);
 			long cur_pos = this.buffer.Position;
 
 			this.buffer.Seek (pos, SeekOrigin.Begin);
 
 			this.buffer.WriteByte (0xff);
-			this.buffer.WriteByte ((byte)(n - 1));
-			this.buffer.Write (src, offset, n * 8);
+			this.buffer.WriteByte ((byte)(align8_n/8 - 1));
+
+			this.buffer.Write (src, offset, n);
+			for (int i = 0; i < align8_n-n; i++) {
+				this.buffer.WriteByte (0);
+			}
 
 			this.buffer.Seek (cur_pos, SeekOrigin.Begin);
 		}
@@ -100,12 +105,12 @@ namespace Sproto
 				} else if (n == 8 && ff_n > 0) {
 					++ff_n;
 					if (ff_n == 256) {
-						this.write_ff (ff_src, ff_srcstart, ff_desstart, 256);
+						this.write_ff (ff_src, ff_srcstart, ff_desstart, 256*8);
 						ff_n = 0;
 					}
 				} else {
 					if (ff_n > 0) {
-						this.write_ff (ff_src, ff_srcstart, ff_desstart, ff_n);
+						this.write_ff (ff_src, ff_srcstart, ff_desstart, ff_n*8);
 						ff_n = 0;
 					}
 				}
@@ -113,8 +118,10 @@ namespace Sproto
 				this.buffer.Seek (n, SeekOrigin.Current);
 			}
 
-			if (ff_n > 0) {
-				this.write_ff (ff_src, ff_srcstart, ff_desstart, ff_n);
+			if (ff_n == 1) {
+				this.write_ff (ff_src, ff_srcstart, ff_desstart, 8);
+			} else if (ff_n > 1) {
+				this.write_ff (ff_src, ff_srcstart, ff_desstart, ff_src.Length - ff_srcstart);
 			}
 
 			long maxsz = (data.LongLength + 2047) / 2048 * 2 + data.LongLength;
