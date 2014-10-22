@@ -99,12 +99,11 @@ namespace Sproto
 		}
 
 		private int encode_string(string str){
-			this.fill_size (str.Length);
-
 			byte[] s = System.Text.Encoding.UTF8.GetBytes (str);
+			this.fill_size (s.Length);
 			this.data.Write (s, 0, s.Length);
 
-			return SprotoTypeSize.sizeof_length + str.Length;
+			return SprotoTypeSize.sizeof_length + s.Length;
 		}
 			
 		private int encode_struct(SprotoTypeBase obj){
