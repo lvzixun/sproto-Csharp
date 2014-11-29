@@ -5,33 +5,34 @@ using System.Collections.Generic;
 namespace Sproto
 {
 	public class SprotoTypeSerialize {
-		private byte[] header;
-		private int header_idx = 2;
+//		private byte[] header;
 
-		private MemoryStream data;
+		private int header_idx;
+		private int header_sz;
+		private int header_cap = SprotoTypeSize.sizeof_header;
+
+
+		private SprotoStream data;
+		private int data_idx;
 
 		private int lasttag = -1;
 		private int index = 0;
 
 
 		public SprotoTypeSerialize (int max_field_count) {
-			this.header = new byte[
-				SprotoTypeSize.sizeof_header + 
-				max_field_count * SprotoTypeSize.sizeof_field];
-
-			this.data = new MemoryStream ();
+			this.header_sz = SprotoTypeSize.sizeof_header + max_field_count * SprotoTypeSize.sizeof_field;
 		}
 
 		private void set_header_fn(int fn) {
-			this.header [0] = (byte)(fn & 0xff);
-			this.header [1] = (byte)((fn >> 8) & 0xff);
+			this.data [this.header_idx-2] = (byte)(fn & 0xff);
+			this.data [this.header_idx-1] = (byte)((fn >> 8) & 0xff);
 		}
 
 		private void write_header_record(int record) {
-			this.header [this.header_idx] = (byte)(record & 0xff);
-			this.header [this.header_idx + 1] = (byte)((record >> 8) & 0xff);
+			this.data [this.header_idx + this.header_cap-2] = (byte)(record & 0xff);
+			this.data [this.header_idx + this.header_cap-1] = (byte)((record >> 8) & 0xff);
 
-			this.header_idx+=2;
+			this.header_cap += 2;
 			this.index++;
 		}
 
@@ -105,16 +106,29 @@ namespace Sproto
 
 			return SprotoTypeSize.sizeof_length + s.Length;
 		}
+
 			
 		private int encode_struct(SprotoTypeBase obj){
-			byte[] data = obj.encode ();
+			int sz_pos = this.data.Position;
 
-			this.fill_size (data.Length);
-			this.data.Write (data, 0, data.Length);
+			this.data.Seek (SprotoTypeSize.sizeof_length, SeekOrigin.Current);
+			int len = obj.encode (this.data);
+			int cur_pos = this.data.Position;
 
-			return SprotoTypeSize.sizeof_length + data.Length;
+			this.data.Seek (sz_pos, SeekOrigin.Begin);
+			this.fill_size (len);
+			this.data.Seek (cur_pos, SeekOrigin.Begin);
+
+			return SprotoTypeSize.sizeof_length + len;
 		}
 
+		private void clear() {
+			this.index = 0;
+			this.header_idx = 2;
+			this.lasttag = -1;
+			this.data = null;
+			this.header_cap = SprotoTypeSize.sizeof_header;
+		}
 
 
 		// API
@@ -147,10 +161,10 @@ namespace Sproto
 			if (integer_list == null || integer_list.Count <= 0)
 				return;
 
-			long sz_pos = this.data.Position;
+			int sz_pos = this.data.Position;
 			this.data.Seek (sz_pos + SprotoTypeSize.sizeof_length, SeekOrigin.Begin);
 
-			long begin_pos = this.data.Position;
+			int begin_pos = this.data.Position;
 			int intlen = sizeof(UInt32);
 			this.data.Seek (begin_pos + 1, SeekOrigin.Begin);
 
@@ -183,7 +197,7 @@ namespace Sproto
 			}
 
 			// fill integer size
-			long cur_pos = this.data.Position;
+			int cur_pos = this.data.Position;
 			this.data.Seek (begin_pos, SeekOrigin.Begin);
 			this.data.WriteByte ((byte)intlen);
 
@@ -250,14 +264,14 @@ namespace Sproto
 			if (obj_list == null || obj_list.Count <= 0)
 				return;
 
-			long sz_pos = this.data.Position;
+			int sz_pos = this.data.Position;
 			this.data.Seek (SprotoTypeSize.sizeof_length, SeekOrigin.Current);
 
 			foreach (SprotoTypeBase v in obj_list) {
 				this.encode_struct (v);
 			}
 
-			long cur_pos = this.data.Position;
+			int cur_pos = this.data.Position;
 			int sz = (int)(cur_pos - sz_pos - SprotoTypeSize.sizeof_length);
 			this.data.Seek (sz_pos, SeekOrigin.Begin);
 			this.fill_size (sz);
@@ -268,34 +282,28 @@ namespace Sproto
 		}
 
 
-		public byte[] encode() {
+		public void open(SprotoStream stream) {
+			// clear state
+			this.clear ();
+
+			this.data = stream;
+			this.header_idx = stream.Position + this.header_cap;
+			this.data_idx = this.data.Seek (this.header_sz, SeekOrigin.Current);
+		}
+
+
+		public int close() {
 			this.set_header_fn (this.index);
-			int buffer_sz = this.header_idx + (int)this.data.Position;
 
-			// fix me
-			if (buffer_sz >= SprotoTypeSize.encode_max_size)
-				SprotoTypeSize.error ("object is too large (>" + SprotoTypeSize.encode_max_size + ")");
+			int up_count = this.header_sz - this.header_cap;
+			this.data.MoveUp (this.data_idx, up_count);
 
-			byte[] buffer = new byte[buffer_sz];
-
-			// merge header and data
-			for (int i = 0; i < this.header_idx; i++) {
-				buffer [i] = this.header [i];
-			}
-
-			this.data.Seek (0, SeekOrigin.Begin);
-			this.data.Read (buffer, this.header_idx, buffer_sz - this.header_idx);
+			int count = this.data.Position - this.header_idx + SprotoTypeSize.sizeof_header;
 
 			// clear state
 			this.clear ();
-			return buffer;
-		}
-			
-		public void clear() {
-			this.index = 0;
-			this.header_idx = 2;
-			this.lasttag = -1;
-			this.data.Seek (0, SeekOrigin.Begin);
+
+			return count;
 		}
 
 	}
