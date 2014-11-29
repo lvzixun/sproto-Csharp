@@ -56,7 +56,10 @@ person.phone.Add (num1);
 
 serialize and deserialize :
 ~~~~.c#
-byte[] data = address.encode ();                  // encode 
+byte[] data = address.encode ();                  // encode to bytes
+
+Sproto.SprotoStream stream = new SprotoStream (); // encode to stream
+address.encode(stream);
 
 Sproto.SprotoPack spack = new Sproto.SprotoPack ();
 byte[] pack_data = spack.pack (data);             // pack
@@ -82,15 +85,19 @@ dump to c# code:
 ~~~~.c#
 namespace TestProtocol{ 
   
-  public class foobar : SprotoProtocolBase {
+  public class Foobar : SprotoProtocolBase {
     public const int tag = 1;
     public override int GetTag() {
       return tag;
     }
 
-    public TestRpcType.foobar.request request;
-    public TestRpcType.foobar.response response;
+    public TestRpcType.Foobar.request request;
+    public TestRpcType.Foobar.response response;
 
+    static Foobar () {
+      ProtocolFunctionDictionary.SetRequest<TestRpcType.Foobar.request> (tag);
+      ProtocolFunctionDictionary.SetResponse<TestRpcType.Foobar.response> (tag);
+    }
 
     public override SprotoTypeBase GetRequest() {
       return this.request;
@@ -103,6 +110,10 @@ namespace TestProtocol{
 
 }
 ~~~~
+
+## RPC API
+Read TestCaseRpc.cs for detail.
+
 
 
 ## sprotodump
