@@ -44,7 +44,7 @@ namespace Sproto
 
 
 		private void check() {
-			if(this.pos >= this.size || this.begin > this.pos) {
+			if(this.pos > this.size || this.begin > this.pos) {
 				SprotoTypeSize.error("invalid pos.");
 			}
 		}
