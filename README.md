@@ -112,7 +112,7 @@ namespace TestProtocol{
 ~~~~
 
 ## RPC API
-Read TestCaseRpc.cs for detail.
+Read [TestCaseRpc.cs](https://github.com/lvzixun/sproto-Csharp/blob/master/testCase/TestCaseRpc.cs) for detail.
 
 
 
