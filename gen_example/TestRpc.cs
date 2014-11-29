@@ -341,6 +341,10 @@ namespace TestRpcProtocol{
 
 
 
+		static bar () {
+		}
+
+
 		public override SprotoTypeBase GetRequest() {
 			return null;
 		}
@@ -357,6 +361,11 @@ namespace TestRpcProtocol{
 		}
 
 		public TestRpcType.blackhole.request request;
+
+
+		static blackhole () {
+			ProtocolFunctionDictionary.SetRequest<TestRpcType.blackhole.request> (tag);
+		}
 
 
 		public override SprotoTypeBase GetRequest() {
@@ -377,6 +386,11 @@ namespace TestRpcProtocol{
 		public TestRpcType.foo.response response;
 
 
+		static foo () {
+			ProtocolFunctionDictionary.SetResponse<TestRpcType.foo.response> (tag);
+		}
+
+
 		public override SprotoTypeBase GetRequest() {
 			return null;
 		}
@@ -394,6 +408,12 @@ namespace TestRpcProtocol{
 
 		public TestRpcType.foobar.request request;
 		public TestRpcType.foobar.response response;
+
+
+		static foobar () {
+			ProtocolFunctionDictionary.SetRequest<TestRpcType.foobar.request> (tag);
+			ProtocolFunctionDictionary.SetResponse<TestRpcType.foobar.response> (tag);
+		}
 
 
 		public override SprotoTypeBase GetRequest() {

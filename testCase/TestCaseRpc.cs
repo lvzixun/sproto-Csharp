@@ -60,10 +60,11 @@ namespace sprotoCsharp
 			TestRpcType.foo.response foo3 = (TestRpcType.foo.response)cinfo.Obj;
 			assert (foo3.ok == false);
 
+
 			// ================blackhole====================
 			// request
 			TestRpcProtocol.blackhole bh1 = new TestRpcProtocol.blackhole ();
-//			bh1.request = new TestRpcType.blackhole.request ();
+			bh1.request = new TestRpcType.blackhole.request ();
 			req = SprotoRpc.Client.Request (bh1, 3);
 
 			// dispatch
