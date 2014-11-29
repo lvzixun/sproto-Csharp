@@ -57,7 +57,9 @@ namespace TestAllType{
 				}
 			}
 
-			public override byte[] encode () {
+			public override int encode (SprotoStream stream) {
+				base.serialize.open (stream);
+
 				if (base.has_field.has_field (0)) {
 					base.serialize.write_string (this.a, 1);
 				}
@@ -70,10 +72,7 @@ namespace TestAllType{
 					base.serialize.write_integer (this.c, 5);
 				}
 
-				byte[] buffer = base.serialize.encode ();
-				base.serialize.clear ();
-
-				return buffer;
+				return base.serialize.close ();
 			}
 		}
 
@@ -168,7 +167,9 @@ namespace TestAllType{
 			}
 		}
 
-		public override byte[] encode () {
+		public override int encode (SprotoStream stream) {
+			base.serialize.open (stream);
+
 			if (base.has_field.has_field (0)) {
 				base.serialize.write_string (this.a, 0);
 			}
@@ -201,10 +202,7 @@ namespace TestAllType{
 				base.serialize.write_obj (this.h, 7);
 			}
 
-			byte[] buffer = base.serialize.encode ();
-			base.serialize.clear ();
-
-			return buffer;
+			return base.serialize.close ();
 		}
 	}
 

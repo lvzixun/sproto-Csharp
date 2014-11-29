@@ -1,5 +1,6 @@
 ﻿using System;
 using MemberType;
+using Sproto;
 
 namespace sprotoCsharp
 {
@@ -43,13 +44,15 @@ namespace sprotoCsharp
 
 			Sproto.SprotoPack spack = new Sproto.SprotoPack ();
 
-			byte[] pack_data = spack.pack (data);
+//			byte[] pack_data = spack.pack (data);
 
+			Sproto.SprotoStream stream = new SprotoStream ();
 			double b = this.cur_mseconds ();
 			for (int i = 0; i < 1000000; i++) {
 //				address.init (data);
-//				data = address.encode ();
-				spack.pack (data);
+				address.encode (stream);
+				stream.Seek (0, System.IO.SeekOrigin.Begin);
+//				spack.pack (data);
 
 //				byte[] unpack_data = spack.unpack (pack_data);
 //				address.init (unpack_data);

@@ -33,6 +33,9 @@ namespace sprotoCsharp
 				0X55, 0X44, 0X33, 0X22, 0X11, 0X00, 0X00
 			};
 
+			SprotoStream stream = new SprotoStream ();
+			serialize.open (stream);
+
 			serialize.write_integer (-34, 0);
 			serialize.write_string ("test_string", 1);
 			serialize.write_integer (0x4455, 5);
@@ -41,8 +44,11 @@ namespace sprotoCsharp
 			serialize.write_boolean (false, 10);
 			serialize.write_integer (0x1122, 12);
 
+			int len = serialize.close ();
+			byte[] buffer = new byte[len];
+			stream.Seek (0, System.IO.SeekOrigin.Begin);
+			stream.Read (buffer, 0, len);
 
-			byte[] buffer = serialize.encode ();
 			Console.WriteLine ("======== encode buffer ===========");
 			dump_bytes (buffer);
 			assert(buffer, test_result_data);
@@ -86,14 +92,20 @@ namespace sprotoCsharp
 				0X32, 0X33, 0X34, 0X06, 0X00, 0X00, 0X00, 0X66, 0X67, 0X63, 0X62, 0X76, 0X62,
 			};
 
+			SprotoStream stream = new SprotoStream ();
+			serialize.open (stream);
+
 			serialize.write_boolean (b_data, 0);
 			serialize.write_integer (data, 4);
 			serialize.write_string (str_data, 5);
 
+			int len = serialize.close ();
+			byte[] buffer = new byte[len];
+			stream.Seek (0, System.IO.SeekOrigin.Begin);
+			stream.Read (buffer, 0, len);
 
 
 			Console.Write ("====== array dump ========");
-			byte[] buffer = serialize.encode ();
 			dump_bytes (buffer);
 
 			assert(buffer, test_result_data);

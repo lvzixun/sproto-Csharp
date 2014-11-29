@@ -36,15 +36,14 @@ namespace MemberType{
 			}
 		}
 
-		public override byte[] encode () {
+		public override int encode (SprotoStream stream) {
+			base.serialize.open (stream);
+
 			if (base.has_field.has_field (0)) {
 				base.serialize.write_obj (this.person, 0);
 			}
 
-			byte[] buffer = base.serialize.encode ();
-			base.serialize.clear ();
-
-			return buffer;
+			return base.serialize.close ();
 		}
 	}
 
@@ -91,7 +90,9 @@ namespace MemberType{
 				}
 			}
 
-			public override byte[] encode () {
+			public override int encode (SprotoStream stream) {
+				base.serialize.open (stream);
+
 				if (base.has_field.has_field (0)) {
 					base.serialize.write_string (this.number, 0);
 				}
@@ -100,10 +101,7 @@ namespace MemberType{
 					base.serialize.write_integer (this.type, 1);
 				}
 
-				byte[] buffer = base.serialize.encode ();
-				base.serialize.clear ();
-
-				return buffer;
+				return base.serialize.close ();
 			}
 		}
 
@@ -162,7 +160,9 @@ namespace MemberType{
 			}
 		}
 
-		public override byte[] encode () {
+		public override int encode (SprotoStream stream) {
+			base.serialize.open (stream);
+
 			if (base.has_field.has_field (0)) {
 				base.serialize.write_string (this.name, 0);
 			}
@@ -179,10 +179,7 @@ namespace MemberType{
 				base.serialize.write_obj (this.phone, 3);
 			}
 
-			byte[] buffer = base.serialize.encode ();
-			base.serialize.clear ();
-
-			return buffer;
+			return base.serialize.close ();
 		}
 	}
 
