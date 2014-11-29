@@ -45,7 +45,8 @@ namespace PackageType{
 			}
 		}
 
-		public override byte[] encode () {
+		public override int encode (SprotoStream stream) {
+			base.serialize.open (stream);
 			if (base.has_field.has_field (0)) {
 				base.serialize.write_integer (this.type, 0);
 			}
@@ -54,10 +55,7 @@ namespace PackageType{
 				base.serialize.write_integer (this.session, 1);
 			}
 
-			byte[] buffer = base.serialize.encode ();
-			base.serialize.clear ();
-
-			return buffer;
+			return base.serialize.close ();
 		}
 	}
 

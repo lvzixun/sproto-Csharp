@@ -15,9 +15,9 @@ namespace Sproto {
 			this.deserialize = new SprotoTypeDeserialize ();
 		}
 
-		public long init (byte[] buffer){
+		public int init (byte[] buffer, int offset=0){
 			this.clear ();
-			this.deserialize.init (buffer);
+			this.deserialize.init (buffer, offset);
 			this.decode ();
 
 			return this.deserialize.size ();

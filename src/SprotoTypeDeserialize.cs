@@ -7,8 +7,8 @@ namespace Sproto
 	public class SprotoTypeDeserialize {
 
 		private SprotoTypeReader reader;
-		private long begin_data_pos;
-		private long cur_field_pos;
+		private int begin_data_pos;
+		private int cur_field_pos;
 
 		private int fn;
 		private int tag = -1;
@@ -28,7 +28,7 @@ namespace Sproto
 
 		public void init(byte[] data, int offset=0) {
 			this.clear ();
-			this.reader = new SprotoTypeReader (data, offset, data.LongLength);
+			this.reader = new SprotoTypeReader (data, offset, data.Length);
 			this.init ();
 		}
 
@@ -41,7 +41,7 @@ namespace Sproto
 		private void init() {
 			this.fn = this.read_word ();
 
-			long header_length = SprotoTypeSize.sizeof_header + this.fn * SprotoTypeSize.sizeof_field;
+			int header_length = SprotoTypeSize.sizeof_header + this.fn * SprotoTypeSize.sizeof_field;
 			this.begin_data_pos = header_length;
 			this.cur_field_pos = this.reader.Position;
 
@@ -85,7 +85,7 @@ namespace Sproto
 
 
 		public int read_tag() {
-			long pos = this.reader.Position;
+			int pos = this.reader.Position;
 			this.reader.Seek (this.cur_field_pos);
 
 			while(this.reader.Position < this.begin_data_pos){
@@ -226,7 +226,7 @@ namespace Sproto
 
 
 		public T read_obj<T>() where T : SprotoTypeBase, new() {
-			UInt32 sz = this.read_dword ();
+			int sz = (int)this.read_dword ();
 
 			SprotoTypeReader reader = new SprotoTypeReader (this.reader.Buffer, this.reader.Offset, sz);
 			this.reader.Seek (this.reader.Position + sz);
@@ -253,8 +253,8 @@ namespace Sproto
 					SprotoTypeSize.error ("error array object.");
 				}
 
-				reader.Init(this.reader.Buffer, this.reader.Offset, hsz);
-				this.reader.Seek (this.reader.Position + hsz);
+				reader.Init(this.reader.Buffer, this.reader.Offset, (int)hsz);
+				this.reader.Seek (this.reader.Position + (int)hsz);
 
 				T obj = new T();
 				obj.init (reader);
@@ -270,13 +270,13 @@ namespace Sproto
 
 		public void read_unknow_data() {
 			if (this.value < 0) {
-				UInt32 sz = this.read_dword ();
+				int sz = (int)this.read_dword ();
 				this.reader.Seek (sz + this.reader.Position);
 			}
 		}
 
 
-		public long size() {
+		public int size() {
 			return this.reader.Position;
 		}
 

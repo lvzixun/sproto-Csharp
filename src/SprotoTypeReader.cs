@@ -6,27 +6,27 @@ namespace Sproto
 	{
 
 		private byte[] buffer;
-		private long begin;
-		private long pos;
-		private long size;
+		private int begin;
+		private int pos;
+		private int size;
 
 		public byte[] Buffer {
 			get { return buffer;}
 		}
 
-		public long Position {
+		public int Position {
 			get { return this.pos - this.begin; }
 		}
 
-		public long Offset {
+		public int Offset {
 			get { return this.pos; }
 		}
 
-		public long Length {
+		public int Length {
 			get {return this.size - this.begin;}
 		}
 
-		public SprotoTypeReader (byte[] buffer, long offset, long size) {
+		public SprotoTypeReader (byte[] buffer, int offset, int size) {
 			this.Init(buffer, offset, size);
 		}
 
@@ -34,7 +34,7 @@ namespace Sproto
 		}
 
 
-		public void Init(byte[] buffer, long offset, long size) {
+		public void Init(byte[] buffer, int offset, int size) {
 			this.begin = offset;
 			this.pos = offset;
 			this.buffer = buffer;
@@ -44,7 +44,7 @@ namespace Sproto
 
 
 		private void check() {
-			if(this.pos > this.size || this.begin > this.pos) {
+			if(this.pos >= this.size || this.begin > this.pos) {
 				SprotoTypeSize.error("invalid pos.");
 			}
 		}
@@ -54,17 +54,17 @@ namespace Sproto
 			return this.buffer [this.pos++];
 		}
 
-		public void Seek (long offset) {
+		public void Seek (int offset) {
 			this.pos = this.begin + offset;
 			this.check ();
 		}
 
-		public void Read(byte[] data, long offset, long size) {
-			long cur_pos = this.pos;
+		public void Read(byte[] data, int offset, int size) {
+			int cur_pos = this.pos;
 			this.pos += size;
 			check ();
 
-			for (long i = cur_pos; i < this.pos; i++) {
+			for (int i = cur_pos; i < this.pos; i++) {
 				data [offset + i - cur_pos] = this.buffer [i];
 			}
 		}
