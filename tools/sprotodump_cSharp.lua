@@ -292,11 +292,24 @@ local function parse_protocol(class, namespace, stream)
 
       -- write request / response
       if request_type then
-        stream:write(sformat("public %s request;", namespace.."Type."..request_type), 2)
+        request_type = namespace.."Type."..request_type
+        stream:write(sformat("public %s request;", request_type), 2)
       end
       if response_type then
-        stream:write(sformat("public %s response;", namespace.."Type."..response_type), 2)
+        response_type = namespace.."Type."..response_type
+        stream:write(sformat("public %s response;", response_type), 2)
       end
+
+      -- static Constructor function
+      stream:write("\n")
+      stream:write("static "..name.." () {", 2)
+        if request_type then
+          stream:write("ProtocolFunctionDictionary.SetRequest<"..request_type.."> (tag);", 3);
+        end
+        if response_type then
+          stream:write("ProtocolFunctionDictionary.SetResponse<"..response_type.."> (tag);", 3)
+        end
+      stream:write("}", 2)
 
       -- write get_request / get_response
       stream:write("\n")
