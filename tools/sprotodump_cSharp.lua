@@ -255,14 +255,13 @@ local function dump_class(class_info, stream, deep)
 
 
   -- encode function 
-  stream:write("public override byte[] encode () {", deep)
+  stream:write("public override int encode (SprotoStream stream) {", deep)
+    stream:write("base.serialize.open (stream);\n", deep+1)
     for i=1,#sproto_type do
       local field = sproto_type[i]
       _write_encode_field(field, i-1, stream, deep+1)
     end
-    stream:write("byte[] buffer = base.serialize.encode ();", deep+1)
-    stream:write("base.serialize.clear ();\n", deep+1)
-    stream:write("return buffer;", deep+1)
+    stream:write("return base.serialize.close ();", deep+1);
   stream:write("}", deep)
 
 
