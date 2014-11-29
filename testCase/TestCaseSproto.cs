@@ -15,8 +15,8 @@ namespace sprotoCsharp
 			new TestCaseSprotoTypeSerialize ().run ();
 			new TestCaseSprotoTypeDeserialize ().run ();
 			new TestCaseSprotoPack ().run ();
-
 			new TestCaseTestAll ().run ();
+			new TestCaseRpc ().run ();
 		}
 
 	}
