@@ -26,9 +26,9 @@ namespace Sproto
 			this.init (reader);
 		}
 
-		public void init(byte[] data) {
+		public void init(byte[] data, int offset=0) {
 			this.clear ();
-			this.reader = new SprotoTypeReader (data, 0, data.LongLength);
+			this.reader = new SprotoTypeReader (data, offset, data.LongLength);
 			this.init ();
 		}
 
