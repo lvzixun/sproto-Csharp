@@ -43,16 +43,12 @@ namespace Sproto
 
 		static private SprotoTypeBase _gen(Dictionary<int , KeyValuePair<Type, typeFunc>> dictionary, int tag, byte[] buffer, int offset=0) {
 			KeyValuePair<Type, typeFunc> v;
-
 			if (dictionary.TryGetValue (tag, out v)) {
 				SprotoTypeBase obj = v.Value (buffer, offset);
-
 				if (obj.GetType () != v.Key) {
 					SprotoTypeSize.error ("sproto type: "+obj.GetType().ToString() + "not is expected. [" + v.Key.ToString() + "]");
 				}
-
 				return obj;
-
 			}
 
 			return null;

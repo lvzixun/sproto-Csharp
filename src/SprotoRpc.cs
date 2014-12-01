@@ -4,38 +4,41 @@ namespace Sproto
 {
 	public class SprotoRpc
 	{
-		public SprotoRpc ()
-		{
-		}
-
 		public class Client {
+			private SprotoStream stream = new SprotoStream();
+			private SprotoPack spack = new SprotoPack();
+
 			public struct ResponseInfo {
 				public SprotoTypeBase Obj;
 				public int Session;
 			};
 
-			static public byte[] Request(SprotoProtocolBase protocol, int session) {
+			public Client () {
+			}
+
+			public byte[] Request(SprotoProtocolBase protocol, int session) {
 				PackageType.Package package = new PackageType.Package();
 				package.type = protocol.GetTag ();
 				package.session = session;
 
-				SprotoStream stream = new SprotoStream ();
-				int len = package.encode (stream);
+				this.stream.Seek (0, System.IO.SeekOrigin.Begin);
+				int len = package.encode (this.stream);
 				SprotoTypeBase request = protocol.GetRequest ();
 				if (request != null) {
-					len += request.encode (stream);
+					len += request.encode (this.stream);
 				}
 
 				byte[] buffer = new byte[len];
 				stream.Seek (0, System.IO.SeekOrigin.Begin);
 				stream.Read (buffer, 0, len);
 
-				return buffer;
+				return this.spack.pack(buffer);
 			}
 
-			static public ResponseInfo Dispatch(byte[] buffer, int offset=0) {
+			public ResponseInfo Dispatch(byte[] buffer) {
+				buffer = this.spack.unpack (buffer);
 				PackageType.Package package = new PackageType.Package();
-				offset += package.init (buffer, offset);
+				int offset = package.init (buffer);
 
 				ResponseInfo info;
 				info.Obj = ProtocolFunctionDictionary.GenResponse ((int)package.type, buffer, offset); 
@@ -46,7 +49,13 @@ namespace Sproto
 		}
 
 		public class Service {
+			private SprotoStream stream = new SprotoStream();
+			private SprotoPack spack = new SprotoPack();
+
 			public delegate byte[] respFunc (SprotoProtocolBase protocol);
+
+			public Service () {
+			}
 
 			public struct RequestInfo {
 				public SprotoTypeBase Obj;
@@ -54,9 +63,10 @@ namespace Sproto
 				public  respFunc Response;
 			};
 
-			static public RequestInfo Dispatch(byte[] buffer, int offset=0) {
+			public RequestInfo Dispatch(byte[] buffer) {
+				buffer = this.spack.unpack (buffer);
 				PackageType.Package package = new PackageType.Package();
-				offset += package.init (buffer, offset);
+				int offset = package.init (buffer);
 
 				int tag = (int)package.type;
 				ProtocolFunctionDictionary.ProtocolInfo pinfo = ProtocolFunctionDictionary.GetProtocolInfo(tag);
@@ -72,16 +82,16 @@ namespace Sproto
 							throw new Exception ("response type: " + protocol.GetType ().ToString () + " not is expected. [" + pinfo.Response.ToString () + "]");
 						}
 
-						SprotoStream stream = new SprotoStream ();
-						package.encode (stream);
-						protocol.GetResponse ().encode (stream);
+						this.stream.Seek(0, System.IO.SeekOrigin.Begin);
+						package.encode (this.stream);
+						protocol.GetResponse ().encode (this.stream);
 
 						int len = stream.Position;
 						byte[] data = new byte[len];
 						stream.Seek (0, System.IO.SeekOrigin.Begin);
 
 						stream.Read (data, 0, len);
-						return data;
+						return this.spack.pack(data);
 					};
 				}
 
