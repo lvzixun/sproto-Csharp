@@ -13,6 +13,10 @@ namespace Sproto
 			get {return this.pos;}
 		}
 
+		public byte[] Buffer {
+			get {return this.buffer;}
+		}
+
 		public SprotoStream () {
 			this.size = 128;
 			this.pos = 0;
