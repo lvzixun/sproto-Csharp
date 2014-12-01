@@ -13,15 +13,18 @@ namespace sprotoCsharp
 		}
 
 		public override void run() {
+			SprotoRpc.Client client = new SprotoRpc.Client ();
+			SprotoRpc.Service service = new SprotoRpc.Service ();
+
 			// ===============foobar=====================
 			// request
 			TestRpcProtocol.foobar obj = new TestRpcProtocol.foobar ();
 			obj.request = new TestRpcType.foobar.request ();
 			obj.request.what = "test_RPC!!!";
-			byte[] req = SprotoRpc.Client.Request (obj, 1);
+			byte[] req = client.Request (obj, 1);
 
 			// dispatch
-			SprotoRpc.Service.RequestInfo sinfo = SprotoRpc.Service.Dispatch (req);
+			SprotoRpc.Service.RequestInfo sinfo = service.Dispatch (req);
 			assert (sinfo.Session == 1);
 			TestRpcType.foobar.request req_obj = (TestRpcType.foobar.request)sinfo.Obj;
 			assert (req_obj.what == "test_RPC!!!");
@@ -33,7 +36,7 @@ namespace sprotoCsharp
 			byte[] resp = sinfo.Response (resp_obj);
 
 			// dispatch
-			SprotoRpc.Client.ResponseInfo cinfo = SprotoRpc.Client.Dispatch (resp);
+			SprotoRpc.Client.ResponseInfo cinfo = client.Dispatch (resp);
 			assert (cinfo.Session == 1);
 			TestRpcType.foobar.response resp_obj2 = (TestRpcType.foobar.response)cinfo.Obj;
 			assert (resp_obj2.ok == true);
@@ -41,10 +44,10 @@ namespace sprotoCsharp
 			// ================foo====================
 			// request
 			TestRpcProtocol.foo foo1 = new TestRpcProtocol.foo ();
-			req = SprotoRpc.Client.Request (foo1, 2);
+			req = client.Request (foo1, 2);
 
 			// dispatch
-			sinfo = SprotoRpc.Service.Dispatch (req);
+			sinfo = service.Dispatch (req);
 			assert (sinfo.Session == 2);
 			assert (sinfo.Obj == null);
 
@@ -55,7 +58,7 @@ namespace sprotoCsharp
 			resp = sinfo.Response (resp_foo2);
 
 			// dispatch
-			cinfo = SprotoRpc.Client.Dispatch (resp);
+			cinfo = client.Dispatch (resp);
 			assert (cinfo.Session == 2);
 			TestRpcType.foo.response foo3 = (TestRpcType.foo.response)cinfo.Obj;
 			assert (foo3.ok == false);
@@ -65,19 +68,19 @@ namespace sprotoCsharp
 			// request
 			TestRpcProtocol.blackhole bh1 = new TestRpcProtocol.blackhole ();
 			bh1.request = new TestRpcType.blackhole.request ();
-			req = SprotoRpc.Client.Request (bh1, 3);
+			req = client.Request (bh1, 3);
 
 			// dispatch
-			sinfo = SprotoRpc.Service.Dispatch (req);
+			sinfo = service.Dispatch (req);
 			assert (sinfo.Session == 3);
 
 			// ================bar====================
 			// request
 			TestRpcProtocol.bar bar1 = new bar ();
-			req = SprotoRpc.Client.Request (bar1, 4);
+			req = client.Request (bar1, 4);
 
 			// dispatch
-			sinfo = SprotoRpc.Service.Dispatch (req);
+			sinfo = service.Dispatch (req);
 			assert (sinfo.Session == 4);
 			assert (sinfo.Obj == null);
 		}
