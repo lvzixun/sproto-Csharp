@@ -66,6 +66,7 @@ local function _get_max_field_count(sproto_type)
     if tag > last_tag +1 then 
       maxn = maxn + 1
     end
+    last_tag = tag
   end
 
   return maxn
