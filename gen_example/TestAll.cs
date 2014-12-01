@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace TestAllType{ 
 	public class Foobar : SprotoTypeBase {
-		private static int max_field_count = 15;
+		private static int max_field_count = 8;
 		
 		public class Nest : SprotoTypeBase {
 			private static int max_field_count = 6;

@@ -275,7 +275,7 @@ namespace TestRpcType{
 
 
 	public class package : SprotoTypeBase {
-		private static int max_field_count = 3;
+		private static int max_field_count = 2;
 		
 		
 		private Int64 _type; // tag 0

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace PackageType{ 
 	public class Package : SprotoTypeBase {
-		private static int max_field_count = 3;
+		private static int max_field_count = 2;
 		
 		
 		private Int64 _type; // tag 0
@@ -47,6 +47,7 @@ namespace PackageType{
 
 		public override int encode (SprotoStream stream) {
 			base.serialize.open (stream);
+
 			if (base.has_field.has_field (0)) {
 				base.serialize.write_integer (this.type, 0);
 			}

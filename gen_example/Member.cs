@@ -49,10 +49,10 @@ namespace MemberType{
 
 
 	public class Person : SprotoTypeBase {
-		private static int max_field_count = 7;
+		private static int max_field_count = 4;
 		
 		public class PhoneNumber : SprotoTypeBase {
-			private static int max_field_count = 3;
+			private static int max_field_count = 2;
 			
 			
 			private string _number; // tag 0
