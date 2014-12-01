@@ -134,9 +134,9 @@ in my i5-3470 @3.20GHz :
 
 | library | encode 1M times | decode 1M times |
 |:-------:|:---------------:|:---------------:|
-| sproto-Csharp | 4.773s         | 6.480s     |
-| sproto-Csharp(unpack) | 2.550s | 5.207s     |
-| [protobuf-net](https://github.com/mgravell/protobuf-net) | 8.768s | 10.825s |
+| sproto-Csharp | 2.84s         | 3.00s     |
+| sproto-Csharp(unpack) | 1.36s | 2.12s     |
+| [protobuf-net](https://github.com/mgravell/protobuf-net) | 6.97s | 8.09s |
 
 
 
