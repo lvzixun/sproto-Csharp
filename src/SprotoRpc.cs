@@ -28,11 +28,7 @@ namespace Sproto
 					len += request.encode (this.stream);
 				}
 
-				byte[] buffer = new byte[len];
-				stream.Seek (0, System.IO.SeekOrigin.Begin);
-				stream.Read (buffer, 0, len);
-
-				return this.spack.pack(buffer);
+				return this.spack.pack(this.stream.Buffer, len);
 			}
 
 			public ResponseInfo Dispatch(byte[] buffer) {
