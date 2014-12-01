@@ -66,9 +66,10 @@ namespace Sproto
 		}
 
 
-		public byte[] pack (byte[] data) {
+		public byte[] pack (byte[] data, int len=0) {
 			this.clear ();
 
+			len = (len==0)?(data.Length):(len);
 			byte[] ff_src = null;
 			int    ff_srcstart = 0;
 			long   ff_desstart = 0;
@@ -78,7 +79,7 @@ namespace Sproto
 			byte[] src = data;
 			int offset = 0;
 
-			int srcsz = data.Length;
+			int srcsz = len;
 			for (int i = 0; i < srcsz; i += 8) {
 				offset = i;
 
@@ -137,13 +138,14 @@ namespace Sproto
 		}
 
 
-		public byte[] unpack (byte[] data) {
+		public byte[] unpack (byte[] data, int len=0) {
 			this.clear ();
 
-			int srcsz = data.Length;
+			len = (len==0)?(data.Length):(len);
+			int srcsz = len;
 
 			while (srcsz > 0) {
-				byte header = data [data.Length - srcsz];
+				byte header = data [len - srcsz];
 				--srcsz;
 
 				if (header == 0xff) {
@@ -151,13 +153,13 @@ namespace Sproto
 						SprotoTypeSize.error ("invalid unpack stream.");
 					}
 
-					int n = (data [data.Length - srcsz] + 1) * 8;
+					int n = (data [len - srcsz] + 1) * 8;
 
 					if (srcsz < n + 1) {
 						SprotoTypeSize.error ("invalid unpack stream.");
 					}
 
-					this.buffer.Write (data, data.Length - srcsz + 1, n);
+					this.buffer.Write (data, len - srcsz + 1, n);
 					srcsz -= n + 1;
 				} else {
 					for (int i = 0; i < 8; i++) {
@@ -167,7 +169,7 @@ namespace Sproto
 								SprotoTypeSize.error ("invalid unpack stream.");
 							}
 
-							this.buffer.WriteByte (data [data.Length - srcsz]);
+							this.buffer.WriteByte (data [len - srcsz]);
 							--srcsz;
 						} else {
 							this.buffer.WriteByte (0);
