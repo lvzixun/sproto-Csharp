@@ -50,9 +50,9 @@ namespace sprotoCsharp
 			double b = this.cur_mseconds ();
 			for (int i = 0; i < 1000000; i++) {
 //				address.init (data);
-				address.encode (stream);
-				stream.Seek (0, System.IO.SeekOrigin.Begin);
-//				spack.pack (data);
+				int len = address.encode (stream);
+//				stream.Seek (0, System.IO.SeekOrigin.Begin);
+//				spack.pack (stream.Buffer, len);
 
 //				byte[] unpack_data = spack.unpack (pack_data);
 //				address.init (unpack_data);
