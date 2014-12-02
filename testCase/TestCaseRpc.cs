@@ -20,14 +20,16 @@ namespace sprotoCsharp
 			// request
 			TestRpcProtocol.foobar obj = new TestRpcProtocol.foobar ();
 			obj.request = new TestRpcType.foobar.request ();
-			obj.request.what = "test_RPC!!!";
+			obj.request.what = "foo";
 			byte[] req = client.Request (obj, 1);
+			assert (req, new byte[] {0X55, 0X02, 0X04, 0X04, 0X01, 0Xc4, 0X03, 0X66, 0X6f, 0X01, 0X6f});
 
 			// dispatch
 			SprotoRpc.Service.RequestInfo sinfo = service.Dispatch (req);
 			assert (sinfo.Session == 1);
 			TestRpcType.foobar.request req_obj = (TestRpcType.foobar.request)sinfo.Obj;
-			assert (req_obj.what == "test_RPC!!!");
+			assert (req_obj.what == "foo");
+
 
 			// response
 			TestRpcProtocol.foobar resp_obj = new TestRpcProtocol.foobar ();
@@ -36,6 +38,7 @@ namespace sprotoCsharp
 			byte[] resp = sinfo.Response (resp_obj);
 
 			// dispatch
+			assert (resp, new byte[] {0X55, 0X02, 0X01, 0X04, 0X01, 0X01, 0X04});
 			SprotoRpc.Client.ResponseInfo cinfo = client.Dispatch (resp);
 			assert (cinfo.Session == 1);
 			TestRpcType.foobar.response resp_obj2 = (TestRpcType.foobar.response)cinfo.Obj;
@@ -45,6 +48,7 @@ namespace sprotoCsharp
 			// request
 			TestRpcProtocol.foo foo1 = new TestRpcProtocol.foo ();
 			req = client.Request (foo1, 2);
+			assert (req, new byte[] {0X15, 0X02, 0X06, 0X06});
 
 			// dispatch
 			sinfo = service.Dispatch (req);
@@ -58,6 +62,7 @@ namespace sprotoCsharp
 			resp = sinfo.Response (resp_foo2);
 
 			// dispatch
+			assert (resp, new byte[] {0X55, 0X02, 0X01, 0X06, 0X01, 0X01, 0X02});
 			cinfo = client.Dispatch (resp);
 			assert (cinfo.Session == 2);
 			TestRpcType.foo.response foo3 = (TestRpcType.foo.response)cinfo.Obj;

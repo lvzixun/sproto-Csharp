@@ -49,8 +49,8 @@ namespace sprotoCsharp
 			Sproto.SprotoStream stream = new SprotoStream ();
 			double b = this.cur_mseconds ();
 			for (int i = 0; i < 1000000; i++) {
-//				address.init (data);
-				int len = address.encode (stream);
+				address.init (data);
+//				int len = address.encode (stream);
 //				stream.Seek (0, System.IO.SeekOrigin.Begin);
 //				spack.pack (stream.Buffer, len);
 
