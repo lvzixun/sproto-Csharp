@@ -75,6 +75,7 @@ namespace Sproto
 				public SprotoTypeBase Obj;
 				public int Session;
 				public  respFunc Response;
+				public int Tag;
 			};
 
 			public RequestInfo Dispatch(byte[] buffer) {
@@ -86,6 +87,7 @@ namespace Sproto
 				ProtocolFunctionDictionary.ProtocolInfo pinfo = ProtocolFunctionDictionary.GetProtocolInfo(tag);
 
 				RequestInfo info;
+				info.Tag = tag;
 				info.Obj = ProtocolFunctionDictionary.GenRequest ((int)package.type, buffer, offset); 
 				info.Session = (int)package.session;
 				if (pinfo.Response == null) {
