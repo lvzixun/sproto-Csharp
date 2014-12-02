@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Sproto
 {
@@ -7,10 +8,12 @@ namespace Sproto
 		public class Client {
 			private SprotoStream stream = new SprotoStream();
 			private SprotoPack spack = new SprotoPack();
+			private Dictionary<int, int> sessionDictionary = new Dictionary<int, int>();
 
 			public struct ResponseInfo {
 				public SprotoTypeBase Obj;
 				public int Session;
+				public int Tag;
 			};
 
 			public Client () {
@@ -18,8 +21,14 @@ namespace Sproto
 
 			public byte[] Request(SprotoProtocolBase protocol, int session) {
 				PackageType.Package package = new PackageType.Package();
-				package.type = protocol.GetTag ();
+				int tag = protocol.GetTag ();
+				package.type = tag;
 				package.session = session;
+				ProtocolFunctionDictionary.ProtocolInfo info = ProtocolFunctionDictionary.GetProtocolInfo (tag);
+
+				if (info.Response != null) {
+					this.sessionDictionary.Add (session, tag);
+				}
 
 				this.stream.Seek (0, System.IO.SeekOrigin.Begin);
 				int len = package.encode (this.stream);
@@ -36,9 +45,18 @@ namespace Sproto
 				PackageType.Package package = new PackageType.Package();
 				int offset = package.init (buffer);
 
+				int session = (int)package.session;
+				int tag;
+				if (!this.sessionDictionary.TryGetValue (session, out tag)) {
+					throw new Exception ("Unknown session: " + session);
+				} else {
+					this.sessionDictionary.Remove (session);
+				}
+
 				ResponseInfo info;
-				info.Obj = ProtocolFunctionDictionary.GenResponse ((int)package.type, buffer, offset); 
+				info.Obj = ProtocolFunctionDictionary.GenResponse (tag, buffer, offset);
 				info.Session = (int)package.session;
+				info.Tag = tag;
 
 				return info;
 			}
@@ -79,7 +97,9 @@ namespace Sproto
 						}
 
 						this.stream.Seek(0, System.IO.SeekOrigin.Begin);
-						package.encode (this.stream);
+						PackageType.Package pkg = new PackageType.Package();
+						pkg.session = package.session;
+						pkg.encode (this.stream);
 						protocol.GetResponse ().encode (this.stream);
 
 						int len = stream.Position;
