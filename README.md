@@ -71,25 +71,13 @@ AddressBook obj = new AddressBook(unpack_data);   // decode
 ## protocol
 the `Test.sproto` file:
 ```
-foobar 1 {
+Foobar 1 {
   request {
     what 0 : string
   }
   response {
     ok 0 : boolean
   }
-}
-
-foo 2 {
-  response {
-    ok 0 : boolean
-  }
-}
-
-bar 3 {}
-
-blackhole 4 {
-  request {}
 }
 ```
 
@@ -99,33 +87,13 @@ namespace Protocol{
   public class Test {
     public static readonly ProtocolFunctionDictionary Protocol = new ProtocolFunctionDictionary ();
     static TestRpc() {
-      Protocol.SetProtocol<bar> (bar.Tag);
-
-      Protocol.SetProtocol<blackhole> (blackhole.Tag);
-      Protocol.SetRequest<TestRpcType.blackhole.request> (blackhole.Tag);
-
-      Protocol.SetProtocol<foo> (foo.Tag);
-      Protocol.SetResponse<TestRpcType.foo.response> (foo.Tag);
-
-      Protocol.SetProtocol<foobar> (foobar.Tag);
-      Protocol.SetRequest<TestRpcType.foobar.request> (foobar.Tag);
-      Protocol.SetResponse<TestRpcType.foobar.response> (foobar.Tag);
+      Protocol.SetProtocol<Foobar> (Foobar.Tag);
+      Protocol.SetRequest<TestRpcType.Foobar.request> (Foobar.Tag);
+      Protocol.SetResponse<TestRpcType.Foobar.response> (Foobar.Tag);
 
     }
-
-    public class bar {
-      public const int Tag = 3;
-    }
-
-    public class blackhole {
-      public const int Tag = 4;
-    }
-
-    public class foo {
-      public const int Tag = 2;
-    }
-
-    public class foobar {
+    
+    public class Foobar {
       public const int Tag = 1;
     }
 
