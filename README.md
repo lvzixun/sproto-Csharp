@@ -71,7 +71,7 @@ AddressBook obj = new AddressBook(unpack_data);   // decode
 ## protocol
 the `Test.sproto` file:
 ```
-Foobar 1 {
+foobar 1 {
   request {
     what 0 : string
   }
@@ -79,35 +79,57 @@ Foobar 1 {
     ok 0 : boolean
   }
 }
+
+foo 2 {
+  response {
+    ok 0 : boolean
+  }
+}
+
+bar 3 {}
+
+blackhole 4 {
+  request {}
+}
 ```
 
 dump to c# code:
 ~~~~.c#
-namespace TestProtocol{ 
-  
-  public class Foobar : SprotoProtocolBase {
-    public const int tag = 1;
-    public override int GetTag() {
-      return tag;
+namespace Protocol{ 
+  public class Test {
+    public static readonly ProtocolFunctionDictionary Protocol = new ProtocolFunctionDictionary ();
+    static TestRpc() {
+      Protocol.SetProtocol<bar> (bar.Tag);
+
+      Protocol.SetProtocol<blackhole> (blackhole.Tag);
+      Protocol.SetRequest<TestRpcType.blackhole.request> (blackhole.Tag);
+
+      Protocol.SetProtocol<foo> (foo.Tag);
+      Protocol.SetResponse<TestRpcType.foo.response> (foo.Tag);
+
+      Protocol.SetProtocol<foobar> (foobar.Tag);
+      Protocol.SetRequest<TestRpcType.foobar.request> (foobar.Tag);
+      Protocol.SetResponse<TestRpcType.foobar.response> (foobar.Tag);
+
     }
 
-    public TestRpcType.Foobar.request request;
-    public TestRpcType.Foobar.response response;
-
-    static Foobar () {
-      ProtocolFunctionDictionary.SetRequest<TestRpcType.Foobar.request> (tag);
-      ProtocolFunctionDictionary.SetResponse<TestRpcType.Foobar.response> (tag);
+    public class bar {
+      public const int Tag = 3;
     }
 
-    public override SprotoTypeBase GetRequest() {
-      return this.request;
+    public class blackhole {
+      public const int Tag = 4;
     }
 
-    public override SprotoTypeBase GetResponse() {
-      return this.response;
+    public class foo {
+      public const int Tag = 2;
     }
+
+    public class foobar {
+      public const int Tag = 1;
+    }
+
   }
-
 }
 ~~~~
 
