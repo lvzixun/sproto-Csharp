@@ -332,98 +332,39 @@ namespace TestRpcType{
 }
 
 
-namespace TestRpcProtocol{ 
-	public class bar : SprotoProtocolBase {
-		public const int tag = 3;
-		public override int GetTag() {
-			return tag;
+namespace Protocol{ 
+	public class TestRpc {
+		public static readonly ProtocolFunctionDictionary Protocol = new ProtocolFunctionDictionary ();
+		static TestRpc() {
+			Protocol.SetProtocol<bar> (bar.Tag);
+
+			Protocol.SetProtocol<blackhole> (blackhole.Tag);
+			Protocol.SetRequest<TestRpcType.blackhole.request> (blackhole.Tag);
+
+			Protocol.SetProtocol<foo> (foo.Tag);
+			Protocol.SetResponse<TestRpcType.foo.response> (foo.Tag);
+
+			Protocol.SetProtocol<foobar> (foobar.Tag);
+			Protocol.SetRequest<TestRpcType.foobar.request> (foobar.Tag);
+			Protocol.SetResponse<TestRpcType.foobar.response> (foobar.Tag);
+
 		}
 
-
-
-		static bar () {
+		public class bar {
+			public const int Tag = 3;
 		}
 
-
-		public override SprotoTypeBase GetRequest() {
-			return null;
+		public class blackhole {
+			public const int Tag = 4;
 		}
 
-		public override SprotoTypeBase GetResponse() {
-			return null;
+		public class foo {
+			public const int Tag = 2;
 		}
+
+		public class foobar {
+			public const int Tag = 1;
+		}
+
 	}
-
-	public class blackhole : SprotoProtocolBase {
-		public const int tag = 4;
-		public override int GetTag() {
-			return tag;
-		}
-
-		public TestRpcType.blackhole.request request;
-
-
-		static blackhole () {
-			ProtocolFunctionDictionary.SetRequest<TestRpcType.blackhole.request> (tag);
-		}
-
-
-		public override SprotoTypeBase GetRequest() {
-			return this.request;
-		}
-
-		public override SprotoTypeBase GetResponse() {
-			return null;
-		}
-	}
-
-	public class foo : SprotoProtocolBase {
-		public const int tag = 2;
-		public override int GetTag() {
-			return tag;
-		}
-
-		public TestRpcType.foo.response response;
-
-
-		static foo () {
-			ProtocolFunctionDictionary.SetResponse<TestRpcType.foo.response> (tag);
-		}
-
-
-		public override SprotoTypeBase GetRequest() {
-			return null;
-		}
-
-		public override SprotoTypeBase GetResponse() {
-			return this.response;
-		}
-	}
-
-	public class foobar : SprotoProtocolBase {
-		public const int tag = 1;
-		public override int GetTag() {
-			return tag;
-		}
-
-		public TestRpcType.foobar.request request;
-		public TestRpcType.foobar.response response;
-
-
-		static foobar () {
-			ProtocolFunctionDictionary.SetRequest<TestRpcType.foobar.request> (tag);
-			ProtocolFunctionDictionary.SetResponse<TestRpcType.foobar.response> (tag);
-		}
-
-
-		public override SprotoTypeBase GetRequest() {
-			return this.request;
-		}
-
-		public override SprotoTypeBase GetResponse() {
-			return this.response;
-		}
-	}
-
 }
-
