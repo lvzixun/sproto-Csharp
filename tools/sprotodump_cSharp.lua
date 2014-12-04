@@ -14,6 +14,7 @@ local function create_stream()
 end
 
 function mt:write(s, deep)
+  s = s or ""
   deep = deep or 0
 
   local prefix = ""
@@ -271,61 +272,53 @@ local function dump_class(class_info, stream, deep)
 end
 
 
-local function parse_protocol(class, namespace, stream)
+local function constructor_protocol(class, class_name, stream, deep)
+  stream:write("static "..class_name.."() {", deep)
+  deep = deep + 1
+    for _,class_info in ipairs(class) do
+      local name = class_info.name
+      local tag = class_info.tag
+      local request_type = class_info.request
+      local response_type = class_info.response
+      local stag = name..".Tag"
+
+      stream:write("Protocol.SetProtocol<"..name.."> ("..stag..");", deep)
+      
+      if request_type then
+        request_type = class_name.."Type."..request_type
+        stream:write("Protocol.SetRequest<"..request_type.."> ("..stag..");",deep)
+      end
+
+      if response_type then
+        response_type = class_name.."Type."..response_type
+        stream:write("Protocol.SetResponse<"..response_type.."> ("..stag..");", deep)
+      end
+      stream:write()
+    end
+  deep = deep - 1
+  stream:write("}\n", deep)
+end
+
+
+local function parse_protocol(class, class_name, stream)
   if not class or #class == 0 then return end
 
-  stream:write("namespace "..namespace.."Protocol".. "{ ")
+  stream:write("namespace ".."Protocol".. "{ ")
+    stream:write("public class "..class_name.." {", 1)
+      stream:write("public static readonly ProtocolFunctionDictionary Protocol = new ProtocolFunctionDictionary ();", 2)
+      constructor_protocol(class, class_name, stream, 2)
 
-  for i=1,#class do
-    local class_info = class[i]
-    local name = class_info.name
-    local tag = class_info.tag
-    local request_type = class_info.request
-    local response_type = class_info.response
+      for i=1,#class do
+        local class_info = class[i]
+        local name = class_info.name
+        local tag = class_info.tag
 
-    stream:write(sformat("public class %s : SprotoProtocolBase {", name), 1)
-      
-      -- write tag
-      stream:write(sformat("public const int tag = %d;", tag), 2)
-      stream:write("public override int GetTag() {", 2)
-        stream:write("return tag;", 3)
-      stream:write("}\n", 2)
-
-      -- write request / response
-      if request_type then
-        request_type = namespace.."Type."..request_type
-        stream:write(sformat("public %s request;", request_type), 2)
+        stream:write("public class "..name.." {", 2)
+          stream:write("public const int Tag = "..tag..";", 3)
+        stream:write("}\n", 2)
       end
-      if response_type then
-        response_type = namespace.."Type."..response_type
-        stream:write(sformat("public %s response;", response_type), 2)
-      end
-
-      -- static Constructor function
-      stream:write("\n")
-      stream:write("static "..name.." () {", 2)
-        if request_type then
-          stream:write("ProtocolFunctionDictionary.SetRequest<"..request_type.."> (tag);", 3);
-        end
-        if response_type then
-          stream:write("ProtocolFunctionDictionary.SetResponse<"..response_type.."> (tag);", 3)
-        end
-      stream:write("}", 2)
-
-      -- write get_request / get_response
-      stream:write("\n")
-      stream:write("public override SprotoTypeBase GetRequest() {", 2)
-        stream:write("return "..(request_type and "this.request" or "null")..";", 3)
-      stream:write("}\n", 2)
-
-      stream:write("public override SprotoTypeBase GetResponse() {", 2)
-        stream:write("return "..(response_type and "this.response" or "null")..";", 3)
-      stream:write("}", 2)
-
-    stream:write("}\n", 1)
-  end
-
-  stream:write("}\n\n")
+    stream:write("}", 1)
+  stream:write("}\n")
 end
 
 
