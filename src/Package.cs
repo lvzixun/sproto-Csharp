@@ -58,6 +58,14 @@ namespace PackageType{
 
 			return base.serialize.close ();
 		}
+
+		public bool HasType() {
+			return base.has_field.has_field (0);
+		}
+
+		public bool HasSession() {
+			return base.has_field.has_field (1);
+		}
 	}
 
 

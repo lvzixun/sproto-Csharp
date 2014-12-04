@@ -5,117 +5,133 @@ namespace Sproto
 {
 	public class SprotoRpc
 	{
-		public class Client {
-			private SprotoStream stream = new SprotoStream();
-			private SprotoPack spack = new SprotoPack();
-			private Dictionary<int, int> sessionDictionary = new Dictionary<int, int>();
+		public enum RpcType{
+			REQUEST = 1,
+			RESPONSE = 2,
+		};
 
-			public struct ResponseInfo {
-				public SprotoTypeBase Obj;
-				public int Session;
-				public int Tag;
-			};
+		public struct RpcInfo {
+			public RpcType type;
+			public long? session;
+			public int? tag;
 
-			public Client () {
+			public SprotoTypeBase requestObj;
+			public SprotoTypeBase responseObj;
+			public ResponseFunction Response;
+		};
+
+		public class RpcRequest {
+			private ProtocolFunctionDictionary protocol;
+			private SprotoRpc rpc;
+
+			public RpcRequest(ProtocolFunctionDictionary protocol, SprotoRpc rpc) {
+				this.protocol = protocol;
+				this.rpc = rpc;
 			}
 
-			public byte[] Request(SprotoProtocolBase protocol, int session) {
-				PackageType.Package package = new PackageType.Package();
-				int tag = protocol.GetTag ();
-				package.type = tag;
-				package.session = session;
-				ProtocolFunctionDictionary.ProtocolInfo info = ProtocolFunctionDictionary.GetProtocolInfo (tag);
-
-				if (info.Response != null) {
-					this.sessionDictionary.Add (session, tag);
+			public byte[] Invoke<T>(SprotoTypeBase request=null, long? session=null) {
+				int tag = protocol[typeof(T)];
+				ProtocolFunctionDictionary.MetaInfo info = protocol[tag];
+				if(request != null && request.GetType() != info.Request.Key) {
+					throw new Exception("request type: " + request.GetType().ToString() + "not is expected. [" + info.Request.Key.GetType().ToString() + "]");
+			
 				}
 
-				this.stream.Seek (0, System.IO.SeekOrigin.Begin);
-				int len = package.encode (this.stream);
-				SprotoTypeBase request = protocol.GetRequest ();
+				rpc.package.clear();
+				rpc.package.type = tag;
+
+				if(session != null) {
+					rpc.sessionDictionary.Add((long)session, info.Response.Value);
+					rpc.package.session = (long)session;
+				}
+
+				rpc.stream.Seek (0, System.IO.SeekOrigin.Begin);
+				int len = rpc.package.encode (rpc.stream);
+
 				if (request != null) {
-					len += request.encode (this.stream);
+					len += request.encode (rpc.stream);
 				}
 
-				return this.spack.pack(this.stream.Buffer, len);
-			}
-
-			public ResponseInfo Dispatch(byte[] buffer) {
-				buffer = this.spack.unpack (buffer);
-				PackageType.Package package = new PackageType.Package();
-				int offset = package.init (buffer);
-
-				int session = (int)package.session;
-				int tag;
-				if (!this.sessionDictionary.TryGetValue (session, out tag)) {
-					throw new Exception ("Unknown session: " + session);
-				} else {
-					this.sessionDictionary.Remove (session);
-				}
-
-				ResponseInfo info;
-				info.Obj = ProtocolFunctionDictionary.GenResponse (tag, buffer, offset);
-				info.Session = (int)package.session;
-				info.Tag = tag;
-
-				return info;
+				return rpc.spack.pack(rpc.stream.Buffer, len);
 			}
 		}
 
-		public class Service {
-			private SprotoStream stream = new SprotoStream();
-			private SprotoPack spack = new SprotoPack();
+		public delegate byte[] ResponseFunction(SprotoTypeBase response);
 
-			public delegate byte[] respFunc (SprotoProtocolBase protocol);
+		private SprotoStream stream = new SprotoStream();
+		private SprotoPack spack = new SprotoPack();
+		private Dictionary<long, ProtocolFunctionDictionary.typeFunc> sessionDictionary = new Dictionary<long,  ProtocolFunctionDictionary.typeFunc>();
+		private ProtocolFunctionDictionary protocol;
+		private PackageType.Package package = new PackageType.Package ();
 
-			public Service () {
-			}
+		public SprotoRpc (ProtocolFunctionDictionary protocol=null) {
+			this.protocol = protocol;
+		}
+			
 
-			public struct RequestInfo {
-				public SprotoTypeBase Obj;
-				public int Session;
-				public  respFunc Response;
-				public int Tag;
-			};
+		public RpcRequest Attach(ProtocolFunctionDictionary protocol) {
+			RpcRequest request = new RpcRequest (protocol, this);
+			return request;
+		}
+		 
 
-			public RequestInfo Dispatch(byte[] buffer) {
-				buffer = this.spack.unpack (buffer);
-				PackageType.Package package = new PackageType.Package();
-				int offset = package.init (buffer);
+		public RpcInfo Dispatch(byte[] buffer, int offset=0) {
+			buffer = this.spack.unpack (buffer, buffer.Length - offset);
+			offset = this.package.init (buffer);
+			RpcInfo info;
 
-				int tag = (int)package.type;
-				ProtocolFunctionDictionary.ProtocolInfo pinfo = ProtocolFunctionDictionary.GetProtocolInfo(tag);
-
-				RequestInfo info;
-				info.Tag = tag;
-				info.Obj = ProtocolFunctionDictionary.GenRequest ((int)package.type, buffer, offset); 
-				info.Session = (int)package.session;
-				if (pinfo.Response == null) {
-					info.Response = null;
-				} else {
-					info.Response = delegate (SprotoProtocolBase protocol) {
-						if (pinfo.Response != protocol.GetResponse().GetType ()) {
-							throw new Exception ("response type: " + protocol.GetType ().ToString () + " not is expected. [" + pinfo.Response.ToString () + "]");
+			// request
+			if (this.package.HasType()) {
+				int tag = (int)this.package.type;
+				info.session = null;
+				info.tag = tag;
+				info.responseObj = null;
+				info.requestObj = (this.protocol!=null)?(this.protocol.GenRequest (tag, buffer, offset)):(null);
+				info.type = RpcType.REQUEST;
+				info.Response = null;
+				if (this.package.HasSession ()) {
+					long session = this.package.session;
+					info.Response = delegate (SprotoTypeBase response) {
+						ProtocolFunctionDictionary.MetaInfo pinfo = this.protocol [tag];
+						if (response.GetType () != pinfo.Response.Key) {
+							throw new Exception ("response type: " + response.GetType ().ToString () + "is not expected.(" + pinfo.Response.Key.ToString () + ")");
 						}
 
-						this.stream.Seek(0, System.IO.SeekOrigin.Begin);
-						PackageType.Package pkg = new PackageType.Package();
-						pkg.session = package.session;
-						pkg.encode (this.stream);
-						protocol.GetResponse ().encode (this.stream);
+						this.stream.Seek (0, System.IO.SeekOrigin.Begin);
+						this.package.clear();
+						this.package.session = session;
+						this.package.encode (this.stream);
+
+						response.encode (this.stream);
 
 						int len = stream.Position;
 						byte[] data = new byte[len];
 						stream.Seek (0, System.IO.SeekOrigin.Begin);
 
 						stream.Read (data, 0, len);
-						return this.spack.pack(data);
+						return this.spack.pack (data);
 					};
 				}
 
-				return info;
+			} else { // response
+				if (!this.package.HasSession()) {
+					throw new Exception ("session not found");
+				}
+
+				ProtocolFunctionDictionary.typeFunc response;
+				if (!this.sessionDictionary.TryGetValue (this.package.session, out response)) {
+					throw new Exception ("Unknown session: " + this.package.session);
+				}
+
+				info.tag = null;
+				info.session = this.package.session;
+				info.requestObj = null;
+				info.Response = null;
+				info.type = RpcType.RESPONSE;
+				info.responseObj =  (response == null)?(null):(response (buffer, offset));
 			}
 
+			return info;
 		}
 	}
 }
