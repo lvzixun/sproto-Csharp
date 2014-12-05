@@ -15,11 +15,17 @@ namespace PackageType{
 			get { return _type; }
 			set { base.has_field.set_field (0, true); _type = value; }
 		}
+		public bool HasType {
+			get { return base.has_field.has_field (0); }
+		}
 
 		private Int64 _session; // tag 1
 		public Int64 session {
 			get { return _session; }
 			set { base.has_field.set_field (1, true); _session = value; }
+		}
+		public bool HasSession {
+			get { return base.has_field.has_field (1); }
 		}
 
 		public Package () : base(max_field_count) {}
@@ -57,14 +63,6 @@ namespace PackageType{
 			}
 
 			return base.serialize.close ();
-		}
-
-		public bool HasType() {
-			return base.has_field.has_field (0);
-		}
-
-		public bool HasSession() {
-			return base.has_field.has_field (1);
 		}
 	}
 

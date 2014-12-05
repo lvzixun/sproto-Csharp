@@ -81,7 +81,7 @@ namespace Sproto
 			RpcInfo info;
 
 			// request
-			if (this.package.HasType()) {
+			if (this.package.HasType) {
 				int tag = (int)this.package.type;
 				info.session = null;
 				info.tag = tag;
@@ -89,7 +89,7 @@ namespace Sproto
 				info.requestObj = (this.protocol!=null)?(this.protocol.GenRequest (tag, buffer, offset)):(null);
 				info.type = RpcType.REQUEST;
 				info.Response = null;
-				if (this.package.HasSession ()) {
+				if (this.package.HasSession) {
 					long session = this.package.session;
 					info.Response = delegate (SprotoTypeBase response) {
 						ProtocolFunctionDictionary.MetaInfo pinfo = this.protocol [tag];
@@ -114,7 +114,7 @@ namespace Sproto
 				}
 
 			} else { // response
-				if (!this.package.HasSession()) {
+				if (!this.package.HasSession) {
 					throw new Exception ("session not found");
 				}
 
