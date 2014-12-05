@@ -15,6 +15,9 @@ namespace MemberType{
 			get { return _person; }
 			set { base.has_field.set_field (0, true); _person = value; }
 		}
+		public bool HasPerson {
+			get { return base.has_field.has_field (0); }
+		}
 
 		public AddressBook () : base(max_field_count) {}
 
@@ -60,11 +63,17 @@ namespace MemberType{
 				get { return _number; }
 				set { base.has_field.set_field (0, true); _number = value; }
 			}
+			public bool HasNumber {
+				get { return base.has_field.has_field (0); }
+			}
 
 			private Int64 _type; // tag 1
 			public Int64 type {
 				get { return _type; }
 				set { base.has_field.set_field (1, true); _type = value; }
+			}
+			public bool HasType {
+				get { return base.has_field.has_field (1); }
 			}
 
 			public PhoneNumber () : base(max_field_count) {}
@@ -112,11 +121,17 @@ namespace MemberType{
 			get { return _name; }
 			set { base.has_field.set_field (0, true); _name = value; }
 		}
+		public bool HasName {
+			get { return base.has_field.has_field (0); }
+		}
 
 		private Int64 _id; // tag 1
 		public Int64 id {
 			get { return _id; }
 			set { base.has_field.set_field (1, true); _id = value; }
+		}
+		public bool HasId {
+			get { return base.has_field.has_field (1); }
 		}
 
 		private string _email; // tag 2
@@ -124,11 +139,17 @@ namespace MemberType{
 			get { return _email; }
 			set { base.has_field.set_field (2, true); _email = value; }
 		}
+		public bool HasEmail {
+			get { return base.has_field.has_field (2); }
+		}
 
 		private List<Person.PhoneNumber> _phone; // tag 3
 		public List<Person.PhoneNumber> phone {
 			get { return _phone; }
 			set { base.has_field.set_field (3, true); _phone = value; }
+		}
+		public bool HasPhone {
+			get { return base.has_field.has_field (3); }
 		}
 
 		public Person () : base(max_field_count) {}

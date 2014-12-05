@@ -18,17 +18,26 @@ namespace TestAllType{
 				get { return _a; }
 				set { base.has_field.set_field (0, true); _a = value; }
 			}
+			public bool HasA {
+				get { return base.has_field.has_field (0); }
+			}
 
 			private bool _b; // tag 3
 			public bool b {
 				get { return _b; }
 				set { base.has_field.set_field (1, true); _b = value; }
 			}
+			public bool HasB {
+				get { return base.has_field.has_field (1); }
+			}
 
 			private Int64 _c; // tag 5
 			public Int64 c {
 				get { return _c; }
 				set { base.has_field.set_field (2, true); _c = value; }
+			}
+			public bool HasC {
+				get { return base.has_field.has_field (2); }
 			}
 
 			public Nest () : base(max_field_count) {}
@@ -83,11 +92,17 @@ namespace TestAllType{
 			get { return _a; }
 			set { base.has_field.set_field (0, true); _a = value; }
 		}
+		public bool HasA {
+			get { return base.has_field.has_field (0); }
+		}
 
 		private Int64 _b; // tag 1
 		public Int64 b {
 			get { return _b; }
 			set { base.has_field.set_field (1, true); _b = value; }
+		}
+		public bool HasB {
+			get { return base.has_field.has_field (1); }
 		}
 
 		private bool _c; // tag 2
@@ -95,11 +110,17 @@ namespace TestAllType{
 			get { return _c; }
 			set { base.has_field.set_field (2, true); _c = value; }
 		}
+		public bool HasC {
+			get { return base.has_field.has_field (2); }
+		}
 
 		private Foobar.Nest _d; // tag 3
 		public Foobar.Nest d {
 			get { return _d; }
 			set { base.has_field.set_field (3, true); _d = value; }
+		}
+		public bool HasD {
+			get { return base.has_field.has_field (3); }
 		}
 
 		private List<string> _e; // tag 4
@@ -107,11 +128,17 @@ namespace TestAllType{
 			get { return _e; }
 			set { base.has_field.set_field (4, true); _e = value; }
 		}
+		public bool HasE {
+			get { return base.has_field.has_field (4); }
+		}
 
 		private List<Int64> _f; // tag 5
 		public List<Int64> f {
 			get { return _f; }
 			set { base.has_field.set_field (5, true); _f = value; }
+		}
+		public bool HasF {
+			get { return base.has_field.has_field (5); }
 		}
 
 		private List<bool> _g; // tag 6
@@ -119,11 +146,17 @@ namespace TestAllType{
 			get { return _g; }
 			set { base.has_field.set_field (6, true); _g = value; }
 		}
+		public bool HasG {
+			get { return base.has_field.has_field (6); }
+		}
 
 		private List<Foobar> _h; // tag 7
 		public List<Foobar> h {
 			get { return _h; }
 			set { base.has_field.set_field (7, true); _h = value; }
+		}
+		public bool HasH {
+			get { return base.has_field.has_field (7); }
 		}
 
 		public Foobar () : base(max_field_count) {}

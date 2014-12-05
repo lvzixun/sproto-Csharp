@@ -76,6 +76,9 @@ namespace TestRpcType{
 				get { return _ok; }
 				set { base.has_field.set_field (0, true); _ok = value; }
 			}
+			public bool HasOk {
+				get { return base.has_field.has_field (0); }
+			}
 
 			public response () : base(max_field_count) {}
 
@@ -114,6 +117,9 @@ namespace TestRpcType{
 		public bool ok {
 			get { return _ok; }
 			set { base.has_field.set_field (0, true); _ok = value; }
+		}
+		public bool HasOk {
+			get { return base.has_field.has_field (0); }
 		}
 
 		public foo () : base(max_field_count) {}
@@ -160,6 +166,9 @@ namespace TestRpcType{
 				get { return _what; }
 				set { base.has_field.set_field (0, true); _what = value; }
 			}
+			public bool HasWhat {
+				get { return base.has_field.has_field (0); }
+			}
 
 			public request () : base(max_field_count) {}
 
@@ -202,6 +211,9 @@ namespace TestRpcType{
 				get { return _ok; }
 				set { base.has_field.set_field (0, true); _ok = value; }
 			}
+			public bool HasOk {
+				get { return base.has_field.has_field (0); }
+			}
 
 			public response () : base(max_field_count) {}
 
@@ -240,6 +252,9 @@ namespace TestRpcType{
 		public string what {
 			get { return _what; }
 			set { base.has_field.set_field (0, true); _what = value; }
+		}
+		public bool HasWhat {
+			get { return base.has_field.has_field (0); }
 		}
 
 		public foobar () : base(max_field_count) {}
@@ -283,11 +298,17 @@ namespace TestRpcType{
 			get { return _type; }
 			set { base.has_field.set_field (0, true); _type = value; }
 		}
+		public bool HasType {
+			get { return base.has_field.has_field (0); }
+		}
 
 		private Int64 _session; // tag 1
 		public Int64 session {
 			get { return _session; }
 			set { base.has_field.set_field (1, true); _session = value; }
+		}
+		public bool HasSession {
+			get { return base.has_field.has_field (1); }
 		}
 
 		public package () : base(max_field_count) {}
