@@ -9,6 +9,11 @@ local sformat = string.format
 local mt = {}
 mt.__index = mt
 
+local function upper_head(s)
+  local c =  string.upper(string.sub(s, 1, 1))
+  return c..string.sub(s, 2)
+end
+
 local function create_stream()
   return setmetatable({}, mt)
 end
@@ -222,10 +227,14 @@ local function dump_class(class_info, stream, deep)
     local name = field.name
     local tag = field.tag
 
-    stream:write(sformat("private %s _%s; // tag %d", type, name, tag), deep)    
+    stream:write(sformat("private %s _%s; // tag %d", type, name, tag), deep)
     stream:write(sformat("public %s %s {", type, name), deep)
       stream:write(sformat("get { return _%s; }", name), deep+1)
       stream:write(sformat("set { base.has_field.set_field (%d, true); _%s = value; }", i-1, name), deep+1)
+    stream:write("}", deep)
+
+    stream:write("public bool Has"..upper_head(name).." {", deep)
+      stream:write(sformat("get { return base.has_field.has_field (%d); }", i-1), deep+1)
     stream:write("}\n", deep)
   end
 
