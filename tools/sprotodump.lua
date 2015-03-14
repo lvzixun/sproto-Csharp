@@ -1,7 +1,6 @@
 local parse_core = require "sprotoparse_core"
 local spb = require "sprotodump_spb"
 local cSharp = require "sprotodump_cSharp"
-local print_r = require "print_r"
 
 local README = [[
 usage: lua sprotodump.lua [[<out_option> <out>] ...] <option> <sproto_file ...>

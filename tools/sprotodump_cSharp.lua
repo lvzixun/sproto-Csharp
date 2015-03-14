@@ -4,7 +4,6 @@ local tsort = table.sort
 local tconcat = table.concat
 local sformat = string.format
 
--- local print_r = require "print_r"
 
 local mt = {}
 mt.__index = mt

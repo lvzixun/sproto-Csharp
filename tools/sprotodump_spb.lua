@@ -1,6 +1,5 @@
 local parse_core = require "sprotoparse_core"
 local buildin_types = parse_core.buildin_types
-local print_r = require "print_r"
 
 local packbytes
 local packvalue

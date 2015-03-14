@@ -1,6 +1,5 @@
 local lpeg = require "lpeg"
 local table = require "table"
-local print_r = require "print_r"
 
 local P = lpeg.P
 local S = lpeg.S
