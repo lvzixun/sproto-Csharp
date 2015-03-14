@@ -49,8 +49,8 @@ end
 
 
 local function dump_cSharp(trunk_list, param)
+  local package = base_name(param.package or "")
   local ret, build = parse_core.gen_trunk(trunk_list, package)
-  package = base_name(param.package or "")
   local outfile = param.outfile
   local dir = param.dircetory or ""
 
@@ -60,8 +60,8 @@ local function dump_cSharp(trunk_list, param)
   else
     -- dump sprototype
     for i,v in ipairs(ret) do
-      local outcs = base_name(trunk_list[i][2])..".cs"
-      local name = trunk_list[i][2]
+      local name = param.sproto_file[i]
+      local outcs = base_name(name)..".cs"
       local data = cSharp.parse_type(v.type, package, name)
       write_file(dir..outcs, data, "w")
     end
@@ -157,7 +157,6 @@ local function _parse_param(...)
 
   return ret
 end
-
 
 
 local ret = _parse_param(...)

@@ -21,8 +21,13 @@ local function count_lines(_,pos, parser_state)
 	return pos
 end
 
+
+local function highlight(s)
+	return string.format("\x1b[1;31m%s\x1b[0m", s)
+end
+
 local exception = Cmt( Carg(1) , function ( _ , pos, parser_state)
-	error(string.format("syntax error at [%s] line (%d)", parser_state.file or "", parser_state.line))
+	error(highlight(string.format("syntax error at [%s] line (%d)", parser_state.file or "", parser_state.line)))
 	return pos
 end)
 
@@ -42,10 +47,6 @@ local mainkey = "(" * blank0 * name * blank0 * ")"
 
 local function multipat(pat)
 	return Ct(blank0 * (pat * blank0) ^ 0)
-end
-
-local function highlight(s)
-	return string.format("\x1b[1;31m%s\x1b[0m", s)
 end
 
 local function metapatt(name, idx)
@@ -150,7 +151,7 @@ local function adjust(r, build)
 		local set = result[obj.type]
 		local build_set = build[obj.type]
 		local name = obj[1]
-		local meta_info = tostring(r.meta)
+		local meta_info = tostring(obj.meta)
 		assert(set[name] == nil and build_set[name] == nil, "redefined "..name..meta_info)
 		set[name] = convert[obj.type](result,obj, build)
 	end
