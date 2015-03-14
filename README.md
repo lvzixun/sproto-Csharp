@@ -28,13 +28,18 @@ Then you compile it with [sprotodump](https://github.com/lvzixun/sproto-Csharp/b
 
 ```
 $ lua sprotodump.lua
-usage: lua sprotodump.lua [option] <sproto_file>  <outfile_name>
+usage: lua sprotodump.lua [[<out_option> <out>] ...] <option> <sproto_file ...>
 
-  option:
-    -cs              dump to cSharp code file, is default
+  out_option:
+    -d               dump to speciffic dircetory
+    -o               dump to speciffic file
+    -p               set package name(only cSharp code use)
+
+  option: 
+    -cs              dump to cSharp code file
     -spb             dump to binary spb  file
 $
-$ lua sprotodump.lua Member.sproto Member.cs
+$ lua sprotodump.lua -cs Member.sproto  -o Member.cs
 ```
 
 Then you use that code like this:
@@ -83,20 +88,17 @@ Foobar 1 {
 
 dump to c# code:
 ~~~~.c#
-namespace Protocol{ 
-  public class Test {
-    public static readonly ProtocolFunctionDictionary Protocol = new ProtocolFunctionDictionary ();
-    static TestRpc() {
-      Protocol.SetProtocol<Foobar> (Foobar.Tag);
-      Protocol.SetRequest<TestRpcType.Foobar.request> (Foobar.Tag);
-      Protocol.SetResponse<TestRpcType.Foobar.response> (Foobar.Tag);
+public class Protocol : ProtocolBase {
+  public static  Protocol Instance = new Protocol();
+  static Protocol() {
+    Protocol.SetProtocol<Foobar> (Foobar.Tag);
+    Protocol.SetRequest<SprotoType.Foobar.request> (Foobar.Tag);
+    Protocol.SetResponse<SprotoType.Foobar.response> (Foobar.Tag);
 
-    }
-    
-    public class Foobar {
-      public const int Tag = 1;
-    }
+  }
 
+  public class Foobar {
+    public const int Tag = 1;
   }
 }
 ~~~~
