@@ -62,14 +62,15 @@ namespace Sproto
 		private SprotoPack spack = new SprotoPack();
 		private Dictionary<long, ProtocolFunctionDictionary.typeFunc> sessionDictionary = new Dictionary<long,  ProtocolFunctionDictionary.typeFunc>();
 		private ProtocolFunctionDictionary protocol;
-		private PackageType.Package package = new PackageType.Package ();
+		private SprotoType.Package package = new SprotoType.Package ();
 
-		public SprotoRpc (ProtocolFunctionDictionary protocol=null) {
-			this.protocol = protocol;
+		public SprotoRpc (ProtocolBase protocolObj=null) {
+			this.protocol =  (protocolObj!=null)?(protocolObj.Protocol):(null);
 		}
 			
 
-		public RpcRequest Attach(ProtocolFunctionDictionary protocol) {
+		public RpcRequest Attach(ProtocolBase protocolObj=null) {
+			ProtocolFunctionDictionary protocol = (protocolObj!=null)?(protocolObj.Protocol):(null);
 			RpcRequest request = new RpcRequest (protocol, this);
 			return request;
 		}

@@ -93,7 +93,7 @@ end
 
 local function gen_protocol_class(ast)
   local ret = {}
-  for k,v in pairs(ast.protocol) do
+  for k,v in pairs(ast) do
     ret[#ret+1] = {
       name = k, 
       tag = v.tag,
@@ -113,7 +113,7 @@ local function gen_type_class(ast)
   local class = {}
   local cache = {}
 
-  for k, _ in pairs(ast.type) do
+  for k, _ in pairs(ast) do
     type_name_list[#type_name_list+1] = k
   end
   tsort(type_name_list, function (a, b) return a<b end)
@@ -131,7 +131,7 @@ local function gen_type_class(ast)
       else type_name = type_name.."."..class_name end
 
       if not cache[type_name] then
-        local class_info =  type2class(type_name, class_name, ast.type[k])
+        local class_info =  type2class(type_name, class_name, ast[k])
         cur[#cur+1] = class_info
         cache[type_name] = class_info
       end
@@ -281,8 +281,20 @@ local function dump_class(class_info, stream, deep)
 end
 
 
-local function constructor_protocol(class, class_name, stream, deep)
-  stream:write("static "..class_name.."() {", deep)
+local function _gen_sprototype_namespace(package)
+  return upper_head(package).."SprotoType"
+end
+
+
+local function _gen_protocol_classname(package)
+  return upper_head(package).."Protocol"
+end
+
+local function constructor_protocol(class, package, stream, deep)
+  local class_name = _gen_protocol_classname(package)
+  local type_namespace = _gen_sprototype_namespace(package)
+
+  stream:write("private "..class_name.."() {", deep)
   deep = deep + 1
     for _,class_info in ipairs(class) do
       local name = class_info.name
@@ -294,12 +306,12 @@ local function constructor_protocol(class, class_name, stream, deep)
       stream:write("Protocol.SetProtocol<"..name.."> ("..stag..");", deep)
       
       if request_type then
-        request_type = class_name.."Type."..request_type
+        request_type = type_namespace.."."..request_type
         stream:write("Protocol.SetRequest<"..request_type.."> ("..stag..");",deep)
       end
 
       if response_type then
-        response_type = class_name.."Type."..response_type
+        response_type = type_namespace.."."..response_type
         stream:write("Protocol.SetResponse<"..response_type.."> ("..stag..");", deep)
       end
       stream:write()
@@ -309,32 +321,32 @@ local function constructor_protocol(class, class_name, stream, deep)
 end
 
 
-local function parse_protocol(class, class_name, stream)
+local function parse_protocol(class, stream, package)
   if not class or #class == 0 then return end
 
-  stream:write("namespace ".."Protocol".. "{ ")
-    stream:write("public class "..class_name.." {", 1)
-      stream:write("public static readonly ProtocolFunctionDictionary Protocol = new ProtocolFunctionDictionary ();", 2)
-      constructor_protocol(class, class_name, stream, 2)
+  local class_name = _gen_protocol_classname(package)
+  stream:write("public class "..class_name.." : ProtocolBase {")
+    stream:write("public static  "..class_name.." Instance = new "..class_name.."();", 1)
+    constructor_protocol(class, package, stream, 1)
 
-      for i=1,#class do
-        local class_info = class[i]
-        local name = class_info.name
-        local tag = class_info.tag
+    for i=1,#class do
+      local class_info = class[i]
+      local name = class_info.name
+      local tag = class_info.tag
 
-        stream:write("public class "..name.." {", 2)
-          stream:write("public const int Tag = "..tag..";", 3)
-        stream:write("}\n", 2)
-      end
-    stream:write("}", 1)
-  stream:write("}\n")
+      stream:write("public class "..name.." {", 1)
+        stream:write("public const int Tag = "..tag..";", 2)
+      stream:write("}\n", 1)
+    end
+  stream:write("}")
 end
 
 
-local function parse_type(class, namespace, stream)
+local function parse_type(class, stream, package)
   if not class or #class == 0 then return end
 
-  stream:write("namespace "..namespace.."Type".. "{ ")
+  local namespace = _gen_sprototype_namespace(package)
+  stream:write("namespace "..namespace.." { ")
 
   for i=1,#class do
     local class_info = class[i]
@@ -351,32 +363,59 @@ using Sproto;
 using System.Collections.Generic;
 ]]
 
-local function parse(text, name, namespace)
-  namespace = namespace or "SprotoTypeDefault"
 
-  local ast = parse_core.gen_ast(text)
+local function parse_ast2type(ast, package, name)
+  package = package or ""
   local type_class = gen_type_class(ast)
-  local protocol_class = gen_protocol_class(ast)
-
   local stream = create_stream()
 
   stream:write(header)
   stream:write([[// source: ]]..(name or "input").."\n")
-
   stream:write(using)
 
   -- parse type
-  parse_type(type_class, namespace, stream)
-
-  -- parse protocol
-  parse_protocol(protocol_class, namespace, stream)
+  parse_type(type_class, stream, package)
 
   return stream:dump()
 end
 
 
+local function parse_ast2protocol(ast, package)
+  package = package or ""
+  local protocol_class = gen_protocol_class(ast)
+  local stream = create_stream()
+
+  stream:write(header)
+  stream:write(using)
+
+  -- parse protocol
+  parse_protocol(protocol_class, stream, package)
+
+  return stream:dump()  
+end
+
+
+local function parse_ast2all(ast, package, name)
+  package = package or ""
+  local type_class = gen_type_class(ast.type)
+  local protocol_class = gen_protocol_class(ast.protocol)
+  local stream = create_stream()
+
+  stream:write(header)
+  stream:write([[// source: ]]..(name or "input").."\n")
+  stream:write(using)
+
+  parse_type(type_class, stream, package)
+  parse_protocol(protocol_class, stream, package)
+
+  return stream:dump()  
+end
+
+
 return {
-  parse = parse
+  parse_type = parse_ast2type,
+  parse_protocol = parse_ast2protocol,
+  parse_all = parse_ast2all,
 }
 
 

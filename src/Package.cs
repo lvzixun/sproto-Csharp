@@ -5,7 +5,7 @@ using System;
 using Sproto;
 using System.Collections.Generic;
 
-namespace PackageType{ 
+namespace SprotoType { 
 	public class Package : SprotoTypeBase {
 		private static int max_field_count = 2;
 		
