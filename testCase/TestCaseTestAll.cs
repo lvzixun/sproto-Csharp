@@ -1,6 +1,6 @@
 ﻿using System;
 using Sproto;
-using TestAllType;
+using SprotoType;
 using System.Collections.Generic;
 
 namespace sprotoCsharp
