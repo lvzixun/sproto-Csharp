@@ -1,5 +1,5 @@
 ﻿using System;
-using MemberType;
+using SprotoType;
 using Sproto;
 
 namespace sprotoCsharp

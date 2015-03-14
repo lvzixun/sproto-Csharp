@@ -5,7 +5,7 @@ using System;
 using Sproto;
 using System.Collections.Generic;
 
-namespace TestAllType{ 
+namespace SprotoType { 
 	public class Foobar : SprotoTypeBase {
 		private static int max_field_count = 8;
 		

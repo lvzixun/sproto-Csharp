@@ -5,7 +5,7 @@ using System;
 using Sproto;
 using System.Collections.Generic;
 
-namespace TestRpcType{ 
+namespace SprotoType { 
 	public class blackhole : SprotoTypeBase {
 		private static int max_field_count = 0;
 		
@@ -353,39 +353,37 @@ namespace TestRpcType{
 }
 
 
-namespace Protocol{ 
-	public class TestRpc {
-		public static readonly ProtocolFunctionDictionary Protocol = new ProtocolFunctionDictionary ();
-		static TestRpc() {
-			Protocol.SetProtocol<bar> (bar.Tag);
+public class Protocol : ProtocolBase {
+	public static  Protocol Instance = new Protocol();
+	private Protocol() {
+		Protocol.SetProtocol<bar> (bar.Tag);
 
-			Protocol.SetProtocol<blackhole> (blackhole.Tag);
-			Protocol.SetRequest<TestRpcType.blackhole.request> (blackhole.Tag);
+		Protocol.SetProtocol<blackhole> (blackhole.Tag);
+		Protocol.SetRequest<SprotoType.blackhole.request> (blackhole.Tag);
 
-			Protocol.SetProtocol<foo> (foo.Tag);
-			Protocol.SetResponse<TestRpcType.foo.response> (foo.Tag);
+		Protocol.SetProtocol<foo> (foo.Tag);
+		Protocol.SetResponse<SprotoType.foo.response> (foo.Tag);
 
-			Protocol.SetProtocol<foobar> (foobar.Tag);
-			Protocol.SetRequest<TestRpcType.foobar.request> (foobar.Tag);
-			Protocol.SetResponse<TestRpcType.foobar.response> (foobar.Tag);
-
-		}
-
-		public class bar {
-			public const int Tag = 3;
-		}
-
-		public class blackhole {
-			public const int Tag = 4;
-		}
-
-		public class foo {
-			public const int Tag = 2;
-		}
-
-		public class foobar {
-			public const int Tag = 1;
-		}
+		Protocol.SetProtocol<foobar> (foobar.Tag);
+		Protocol.SetRequest<SprotoType.foobar.request> (foobar.Tag);
+		Protocol.SetResponse<SprotoType.foobar.response> (foobar.Tag);
 
 	}
+
+	public class bar {
+		public const int Tag = 3;
+	}
+
+	public class blackhole {
+		public const int Tag = 4;
+	}
+
+	public class foo {
+		public const int Tag = 2;
+	}
+
+	public class foobar {
+		public const int Tag = 1;
+	}
+
 }

@@ -5,7 +5,7 @@ using System;
 using Sproto;
 using System.Collections.Generic;
 
-namespace MemberType{ 
+namespace SprotoType { 
 	public class AddressBook : SprotoTypeBase {
 		private static int max_field_count = 1;
 		
