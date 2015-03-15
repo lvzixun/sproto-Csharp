@@ -1,8 +1,11 @@
 local parse_core = require "sprotoparse_core"
+local buildin_types = parse_core.buildin_types
+
 local gmatch = string.gmatch
 local tsort = table.sort
 local tconcat = table.concat
 local sformat = string.format
+local print_r = require "print_r"
 
 
 local mt = {}
@@ -148,9 +151,20 @@ local _class_type = {
   integer = "Int64",
   boolean = "bool",
 }
-local function _2class_type(t, is_array)
+local function _2class_type(t, is_array, key)
   t = _class_type[t] or t
-  return is_array and "List<"..t..">" or t
+
+  if is_array and key then -- map
+    local tk = _class_type[key.typename]
+    assert(tk , "Invalid map key.")
+    return string.format("Dictionary<%s, %s>", tk, t)
+  elseif is_array and not key then -- arrat
+    return "List<"..t..">"
+  elseif not is_array and not key then -- element
+    return t
+  else
+    error("Invalid field type.")
+  end
 end
 
 
@@ -181,6 +195,7 @@ local function _write_read_field(field, stream, deep)
   local is_array = field.array
   local tag = field.tag
   local name = field.name
+  local key = field.key
 
   local func_name = _read_func[typename]
 
@@ -188,6 +203,11 @@ local function _write_read_field(field, stream, deep)
   if func_name then
     if is_array then func_name = func_name.."_list" end
     stream:write("this."..name.." = base.deserialize."..func_name.." ();", deep+1)
+
+  elseif key then
+    assert(is_array)
+    local fmt = string.format("this.%s = base.deserialize.read_map<%s, %s>(v => v.%s);", name, _class_type[key.typename], typename, key.name)
+    stream:write(fmt, deep+1)
 
   else
     func_name = "read_obj"
@@ -222,7 +242,7 @@ local function dump_class(class_info, stream, deep)
   stream:write("", deep)
   for i=1,#sproto_type do
     local field = sproto_type[i]
-    local type = _2class_type(field.typename, field.array)
+    local type = _2class_type(field.typename, field.array, field.key)
     local name = field.name
     local tag = field.tag
 

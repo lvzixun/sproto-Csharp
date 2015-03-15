@@ -259,17 +259,13 @@ namespace Sproto
 			this.encode_struct (obj);
 			this.write_tag (tag, 0);
 		}
-			
-		public void write_obj<T>(List<T> obj_list, int tag) where T :SprotoTypeBase {
-			if (obj_list == null || obj_list.Count <= 0)
-				return;
 
+		private delegate void write_func();
+		private void write_set(write_func func, int tag) {
 			int sz_pos = this.data.Position;
 			this.data.Seek (SprotoTypeSize.sizeof_length, SeekOrigin.Current);
 
-			foreach (SprotoTypeBase v in obj_list) {
-				this.encode_struct (v);
-			}
+			func ();
 
 			int cur_pos = this.data.Position;
 			int sz = (int)(cur_pos - sz_pos - SprotoTypeSize.sizeof_length);
@@ -281,6 +277,32 @@ namespace Sproto
 			this.write_tag (tag, 0);
 		}
 
+
+		public void write_obj<T>(List<T> obj_list, int tag) where T :SprotoTypeBase {
+			if (obj_list == null || obj_list.Count <= 0)
+				return;
+
+			write_func func = delegate {
+				foreach (SprotoTypeBase v in obj_list) {
+					this.encode_struct (v);
+				}				
+			};
+
+			write_set (func, tag);
+		}
+
+		public void write_obj<TK, TV>(Dictionary<TK, TV> map, int tag) where TV :SprotoTypeBase {
+			if (map == null || map.Count <= 0)
+				return;
+
+			write_func func = delegate {
+				foreach(var pair in map){
+					this.encode_struct(pair.Value);
+				}
+			};
+
+			write_set (func, tag);
+		}
 
 		public void open(SprotoStream stream) {
 			// clear state

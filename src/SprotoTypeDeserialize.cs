@@ -236,36 +236,60 @@ namespace Sproto
 			return obj;
 		}
 
-		public List<T> read_obj_list<T>() where T : SprotoTypeBase, new() {
+		private T read_element<T>(SprotoTypeReader reader, UInt32 sz, out UInt32 read_size) where T : SprotoTypeBase, new() {
+			read_size = 0;
+			if (sz < SprotoTypeSize.sizeof_length) {
+				SprotoTypeSize.error ("error array size.");
+			}
+
+			UInt32 hsz = this.read_dword ();
+			sz -= (UInt32)SprotoTypeSize.sizeof_length;
+			read_size += (UInt32)SprotoTypeSize.sizeof_length;
+
+			if (hsz > sz) {
+				SprotoTypeSize.error ("error array object.");
+			}
+
+			reader.Init(this.reader.Buffer, this.reader.Offset, (int)hsz);
+			this.reader.Seek (this.reader.Position + (int)hsz);
+
+			T obj = new T();
+			obj.init (reader);
+
+			read_size += hsz;
+			return obj;
+		}
+
+		public List<T> read_obj_list<T>() where T : SprotoTypeBase, new(){
 			UInt32 sz = this.read_array_size ();
 
 			List<T> obj_list = new List<T> ();
 			SprotoTypeReader reader = new SprotoTypeReader ();
 			for (UInt32 i = 0; sz > 0; i++) {
-				if (sz < SprotoTypeSize.sizeof_length) {
-					SprotoTypeSize.error ("error array size.");
-				}
-
-				UInt32 hsz = this.read_dword ();
-				sz -= (UInt32)SprotoTypeSize.sizeof_length;
-
-				if (hsz > sz) {
-					SprotoTypeSize.error ("error array object.");
-				}
-
-				reader.Init(this.reader.Buffer, this.reader.Offset, (int)hsz);
-				this.reader.Seek (this.reader.Position + (int)hsz);
-
-				T obj = new T();
-				obj.init (reader);
-				obj_list.Add (obj);
-
-				sz -= hsz;
+				UInt32 read_size;
+				obj_list.Add (read_element<T> (reader, sz, out read_size));
+				sz -= read_size;
 			}
 
 			return obj_list;
 		}
 
+		public delegate TK gen_key_func<TK, TV>(TV v);
+		public Dictionary<TK, TV> read_map<TK, TV>(gen_key_func<TK, TV> func) where TV : SprotoTypeBase, new() {
+			UInt32 sz = this.read_array_size ();
+
+			Dictionary<TK, TV> map = new Dictionary<TK, TV> ();
+			SprotoTypeReader reader = new SprotoTypeReader ();
+			for (UInt32 i = 0; sz > 0; i++) {
+				UInt32 read_size;
+				TV v = read_element<TV> (reader, sz, out read_size);
+				TK k = func (v);
+				map.Add (k, v);
+				sz -= read_size;
+			}
+
+			return map;
+		}
 
 
 		public void read_unknow_data() {
