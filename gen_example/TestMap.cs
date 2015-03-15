@@ -196,6 +196,7 @@ namespace SprotoType {
 			}
 
 			if (base.has_field.has_field (4)) {
+
 				base.serialize.write_obj (this.d3, 4);
 			}
 
