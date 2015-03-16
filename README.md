@@ -23,7 +23,7 @@ You write a `Member.sproto` file :
     person 0 : *Person
 }
 ```
-Then you compile it with [sprotodump](https://github.com/lvzixun/sproto-Csharp/blob/master/tools/sprotodump.lua), to produce code in C#.
+Then you compile it with [sprotodump](https://github.com/lvzixun/sproto_dump/blob/master/sprotodump.lua), to produce code in C#.
 
 
 ```
