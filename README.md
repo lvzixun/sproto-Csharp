@@ -1,7 +1,7 @@
 sproto-Csharp
 =============
 
-A pure C# implementation of [sproto](https://github.com/cloudwu/sproto). and using [sprotodump](https://github.com/lvzixun/sproto-Csharp/blob/master/tools/sprotodump.lua) compiler for C# language on your `.sproto` file to generate data access classes.
+A pure C# implementation of [sproto](https://github.com/cloudwu/sproto). and using [sprotodump](https://github.com/lvzixun/sproto_dump/blob/master/sprotodump.lua) compiler for C# language on your `.sproto` file to generate data access classes.
 
 ## Tutorials
 You write a `Member.sproto` file :
