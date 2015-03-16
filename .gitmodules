@@ -1,0 +1,3 @@
+[submodule "sproto_dump"]
+	path = sproto_dump
+	url = ../sproto_dump/
