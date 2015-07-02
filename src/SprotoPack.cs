@@ -68,8 +68,8 @@ namespace Sproto
 
 		public byte[] pack (byte[] data, int len=0) {
 			this.clear ();
-
-			len = (len==0)?(data.Length):(len);
+		
+			int srcsz = (len==0)?(data.Length):(len);
 			byte[] ff_src = null;
 			int    ff_srcstart = 0;
 			long   ff_desstart = 0;
@@ -79,7 +79,6 @@ namespace Sproto
 			byte[] src = data;
 			int offset = 0;
 
-			int srcsz = len;
 			for (int i = 0; i < srcsz; i += 8) {
 				offset = i;
 
@@ -122,10 +121,11 @@ namespace Sproto
 			if (ff_n == 1) {
 				this.write_ff (ff_src, ff_srcstart, ff_desstart, 8);
 			} else if (ff_n > 1) {
-				this.write_ff (ff_src, ff_srcstart, ff_desstart, ff_src.Length - ff_srcstart);
+				int length = (ff_src == data)?(srcsz):(ff_src.Length);
+				this.write_ff (ff_src, ff_srcstart, ff_desstart, length - ff_srcstart);
 			}
 
-			long maxsz = (data.LongLength + 2047) / 2048 * 2 + data.LongLength;
+			long maxsz = (srcsz + 2047) / 2048 * 2 + srcsz;
 			if (maxsz < this.buffer.Position) {
 				SprotoTypeSize.error ("packing error, return size="+this.buffer.Position);
 			}
