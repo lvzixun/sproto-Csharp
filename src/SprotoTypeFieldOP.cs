@@ -9,7 +9,9 @@ namespace Sproto {
 
 		public SprotoTypeFieldOP (int max_field_count) {
 			int slot_count = max_field_count / slot_bits_size;
-			slot_count = (slot_count > 0)?(slot_count):(1);
+			if(max_field_count % slot_bits_size >0) {
+				slot_count++;
+			}
 
 			this.has_bits = new UInt32[slot_count];
 		}
