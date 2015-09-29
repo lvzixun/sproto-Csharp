@@ -107,19 +107,6 @@ public class Protocol : ProtocolBase {
 Read [TestCaseRpc.cs](https://github.com/lvzixun/sproto-Csharp/blob/master/testCase/TestCaseRpc.cs) for detail.
 
 
-
-## sprotodump
-[sprotodump](https://github.com/lvzixun/sproto-Csharp/blob/master/tools/sprotodump.lua) used to generate C# code or `.spb` binary file.
-
-#### require
-  [lpeg](http://www.inf.puc-rio.br/~roberto/lpeg/)
-
-#### option commands
-```
-  -cs       generate c# code, is default option.
-  -spb      generate `.spb` binary file. 
-```
-
 ## benchmark
 
 in my i5-3470 @3.20GHz :
