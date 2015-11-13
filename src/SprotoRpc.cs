@@ -32,10 +32,12 @@ namespace Sproto
 			public byte[] Invoke<T>(SprotoTypeBase request=null, long? session=null) {
 				int tag = protocol[typeof(T)];
 				ProtocolFunctionDictionary.MetaInfo info = protocol[tag];
+				/*
 				if(request != null && request.GetType() != info.Request.Key) {
 					throw new Exception("request type: " + request.GetType().ToString() + "not is expected. [" + info.Request.Key.GetType().ToString() + "]");
-			
+
 				}
+				*/
 
 				rpc.package.clear();
 				rpc.package.type = tag;
@@ -67,14 +69,14 @@ namespace Sproto
 		public SprotoRpc (ProtocolBase protocolObj=null) {
 			this.protocol =  (protocolObj!=null)?(protocolObj.Protocol):(null);
 		}
-			
+
 
 		public RpcRequest Attach(ProtocolBase protocolObj=null) {
 			ProtocolFunctionDictionary protocol = (protocolObj!=null)?(protocolObj.Protocol):(null);
 			RpcRequest request = new RpcRequest (protocol, this);
 			return request;
 		}
-		 
+
 
 		public RpcInfo Dispatch(byte[] buffer, int offset=0) {
 			buffer = this.spack.unpack (buffer, buffer.Length - offset);
@@ -94,9 +96,11 @@ namespace Sproto
 					long session = this.package.session;
 					info.Response = delegate (SprotoTypeBase response) {
 						ProtocolFunctionDictionary.MetaInfo pinfo = this.protocol [tag];
+						/*
 						if (response.GetType () != pinfo.Response.Key) {
 							throw new Exception ("response type: " + response.GetType ().ToString () + "is not expected.(" + pinfo.Response.Key.ToString () + ")");
 						}
+						*/
 
 						this.stream.Seek (0, System.IO.SeekOrigin.Begin);
 						this.package.clear();
@@ -136,4 +140,3 @@ namespace Sproto
 		}
 	}
 }
-
