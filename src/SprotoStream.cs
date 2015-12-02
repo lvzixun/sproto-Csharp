@@ -74,7 +74,7 @@ namespace Sproto
 
 		public void Read(byte[] buffer, int offset, int count) {
 			for (int i = 0; i < count; i++) {
-				buffer[offset+i] = this.buffer[this.pos+i];
+				buffer[offset+i] = this.buffer[this.pos++];
 			}
 		}
 
