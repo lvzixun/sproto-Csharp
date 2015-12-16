@@ -99,9 +99,10 @@ namespace Sproto
 			}
 
 			set {
-				if (i < 0 || i >= this.size) {
+				if (i < 0 || i > this.size) {
 					throw new Exception ("invalid idx:" + i + "@set");
 				}
+				this._expand ();
 				this.buffer [i] = value;
 			}
 		}

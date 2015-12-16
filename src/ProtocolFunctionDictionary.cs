@@ -62,11 +62,11 @@ namespace Sproto
 		private SprotoTypeBase _gen(KeyValuePair<Type, typeFunc> field, int tag, byte[] buffer, int offset=0) {
 			if (field.Value != null) {
 				SprotoTypeBase obj = field.Value (buffer, offset);
-				/*
+#if (!INCLUDE_IL2CPP)
 				if (obj.GetType () != field.Key) {
 					throw new Exception("sproto type: "+obj.GetType().ToString() + "not is expected. [" + field.Key.ToString() + "]");
 				}
-				*/
+#endif
 				return obj;
 			}
 			return null;
