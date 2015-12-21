@@ -74,10 +74,10 @@ namespace Sproto
 
 		public void Read(byte[] buffer, int offset, int count) {
 			for (int i = 0; i < count; i++) {
-				buffer[offset+i] = this.buffer[this.pos+i];
+				buffer[offset+i] = this.buffer[this.pos++];
 			}
 		}
-			
+
 
 		public void MoveUp(int position, int up_count) {
 			if (up_count <= 0)
@@ -92,14 +92,14 @@ namespace Sproto
 
 		public byte this[int i] {
 			get {
-				if (i < 0 || i > this.pos) {
+				if (i < 0 || i >= this.size) {
 					throw new Exception ("invalid idx:" + i + "@get");
 				}
 				return this.buffer [i];
 			}
 
 			set {
-				if (i < 0 || i > this.pos) {
+				if (i < 0 || i > this.size) {
 					throw new Exception ("invalid idx:" + i + "@set");
 				}
 				this._expand ();
@@ -108,4 +108,3 @@ namespace Sproto
 		}
 	}
 }
-

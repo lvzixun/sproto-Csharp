@@ -10,7 +10,7 @@ namespace Sproto
 			public KeyValuePair<Type, typeFunc> Request;
 			public KeyValuePair<Type, typeFunc> Response;
 		};
-			
+
 		public delegate SprotoTypeBase typeFunc (byte[] buffer, int offset);
 		private Dictionary<int, MetaInfo> MetaDictionary;
 		private Dictionary<Type, int> ProtocolDictionary;
@@ -34,7 +34,7 @@ namespace Sproto
 			data.ProtocolType = typeof(ProtocolType);
 			this.ProtocolDictionary.Add (data.ProtocolType, tag);
 		}
-			
+
 
 		public void SetRequest<T>(int tag) where T: SprotoTypeBase, new() {
 			MetaInfo data = this._getMeta (tag);
@@ -57,14 +57,16 @@ namespace Sproto
 
 			field = new KeyValuePair<Type, typeFunc> (typeof(T), _func);
 		}
-			
+
 
 		private SprotoTypeBase _gen(KeyValuePair<Type, typeFunc> field, int tag, byte[] buffer, int offset=0) {
 			if (field.Value != null) {
 				SprotoTypeBase obj = field.Value (buffer, offset);
+#if (!INCLUDE_IL2CPP)
 				if (obj.GetType () != field.Key) {
 					throw new Exception("sproto type: "+obj.GetType().ToString() + "not is expected. [" + field.Key.ToString() + "]");
 				}
+#endif
 				return obj;
 			}
 			return null;
@@ -80,7 +82,7 @@ namespace Sproto
 			MetaInfo data = this.MetaDictionary[tag];
 			return _gen (data.Request, tag, buffer, offset);
 		}
-			
+
 
 		public MetaInfo this[int tag] {
 			get {
@@ -95,4 +97,3 @@ namespace Sproto
 		}
 	}
 }
-
