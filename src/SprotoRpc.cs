@@ -21,6 +21,10 @@ namespace Sproto
 		};
 
 		public class RpcRequest {
+			private SprotoType.Package package = new SprotoType.Package();
+			private SprotoStream stream = new SprotoStream();
+			private SprotoPack spack = new SprotoPack();
+
 			private ProtocolFunctionDictionary protocol;
 			private SprotoRpc rpc;
 
@@ -38,22 +42,22 @@ namespace Sproto
 
 				}
 #endif
-				rpc.package.clear();
-				rpc.package.type = tag;
+				package.clear();
+				package.type = tag;
 
 				if(session != null) {
 					rpc.sessionDictionary.Add((long)session, info.Response.Value);
-					rpc.package.session = (long)session;
+					package.session = (long)session;
 				}
 
-				rpc.stream.Seek (0, System.IO.SeekOrigin.Begin);
-				int len = rpc.package.encode (rpc.stream);
+				stream.Seek (0, System.IO.SeekOrigin.Begin);
+				int len = package.encode (stream);
 
 				if (request != null) {
-					len += request.encode (rpc.stream);
+					len += request.encode (stream);
 				}
 
-				return rpc.spack.pack(rpc.stream.Buffer, len);
+				return spack.pack(stream.Buffer, len);
 			}
 		}
 
