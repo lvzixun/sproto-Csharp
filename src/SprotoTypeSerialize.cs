@@ -79,7 +79,7 @@ namespace Sproto
 		}
 
 		private void fill_size(int sz) {
-			if (sz <= 0)
+			if (sz < 0)
 				SprotoTypeSize.error ("fill invaild size.");
 
 			this.write_uint32 ((UInt32)sz);
