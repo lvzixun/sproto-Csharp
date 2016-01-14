@@ -79,7 +79,7 @@ namespace Sproto
 		}
 
 		private void fill_size(int sz) {
-			if (sz <= 0)
+			if (sz < 0)
 				SprotoTypeSize.error ("fill invaild size.");
 
 			this.write_uint32 ((UInt32)sz);
@@ -242,7 +242,7 @@ namespace Sproto
 			// write size length
 			int sz = 0;
 			foreach (string v in str_list) {
-				sz += SprotoTypeSize.sizeof_length + v.Length;
+				sz += SprotoTypeSize.sizeof_length + System.Text.Encoding.UTF8.GetByteCount(v);
 			}
 			this.fill_size (sz);
 
