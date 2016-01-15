@@ -125,7 +125,7 @@ namespace Sproto
 				this.write_ff (ff_src, ff_srcstart, ff_desstart, length - ff_srcstart);
 			}
 
-			long maxsz = (srcsz + 2047) / 2048 * 2 + srcsz;
+			long maxsz = (srcsz + 2047) / 2048 * 2 + srcsz + 2;
 			if (maxsz < this.buffer.Position) {
 				SprotoTypeSize.error ("packing error, return size="+this.buffer.Position);
 			}
