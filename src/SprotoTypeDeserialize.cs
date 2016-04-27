@@ -77,7 +77,7 @@ namespace Sproto
 				SprotoTypeSize.error ("invalid array value.");
 
 			UInt32 sz = this.read_dword ();
-			if (sz < 1)
+			if (sz < 0)
 				SprotoTypeSize.error ("error array size("+sz+")");
 
 			return sz;
@@ -133,6 +133,10 @@ namespace Sproto
 			List<Int64> integer_list = null;
 
 			UInt32 sz = this.read_array_size ();
+			if (sz == 0) {
+				return new List<Int64> ();
+			}
+
 			int len = this.reader.ReadByte ();
 			sz--;
 
