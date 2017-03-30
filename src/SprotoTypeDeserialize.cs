@@ -108,6 +108,24 @@ namespace Sproto
 		}
 
 
+		public double read_decimal(double floor) {
+			Int64 v = read_integer ();
+			return  v / floor;
+		}
+
+		public List<double> read_decimal_list(double floor) {
+			List<Int64> l = read_integer_list ();
+			if (l != null) {
+				List<double> ret = new List<double> ();
+				foreach (Int64 v in l) {
+					ret.Add (v / floor);
+				}
+				return ret;
+			}
+			return null;
+		}
+
+
 		public Int64 read_integer() {
 			if (this.value >= 0) {
 				return (Int64)(this.value);
@@ -128,6 +146,7 @@ namespace Sproto
 
 			return 0;
 		}
+
 
 		public List<Int64> read_integer_list() {
 			List<Int64> integer_list = null;

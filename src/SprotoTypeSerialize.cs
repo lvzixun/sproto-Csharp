@@ -132,6 +132,23 @@ namespace Sproto
 
 
 		// API
+		public void write_decimal(double d, double floor, int tag) {
+			Int64 v = (Int64)(d * floor);
+			write_integer (v, tag);
+		}
+
+		public void write_decimal(List<double> d_list, double floor, int tag) {
+			if (d_list == null || d_list.Count <= 0)
+				return;
+			
+			List<Int64> integer_list = new List<Int64> ();
+			foreach (double v in d_list) {
+				integer_list.Add ((Int64)(v * floor));
+			}
+			write_integer (integer_list, tag);
+
+		}
+
 		public void write_integer(Int64 integer, int tag) {
 			Int64 vh = integer >> 31;
 			int sz = (vh == 0 || vh == -1)?(sizeof(UInt32)):(sizeof(UInt64));
