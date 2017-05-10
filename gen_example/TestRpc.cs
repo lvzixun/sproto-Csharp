@@ -6,9 +6,8 @@ using Sproto;
 using System.Collections.Generic;
 
 namespace SprotoType { 
-	public class blackhole : SprotoTypeBase {
-		private static int max_field_count = 0;
-		
+	public class blackhole {
+	
 		public class request : SprotoTypeBase {
 			private static int max_field_count = 0;
 			
@@ -38,35 +37,11 @@ namespace SprotoType {
 		}
 
 
-		
-		public blackhole () : base(max_field_count) {}
-
-		public blackhole (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode ();
-		}
-
-		protected override void decode () {
-			int tag = -1;
-			while (-1 != (tag = base.deserialize.read_tag ())) {
-				switch (tag) {
-				default:
-					base.deserialize.read_unknow_data ();
-					break;
-				}
-			}
-		}
-
-		public override int encode (SprotoStream stream) {
-			base.serialize.open (stream);
-
-			return base.serialize.close ();
-		}
 	}
 
 
-	public class foo : SprotoTypeBase {
-		private static int max_field_count = 1;
-		
+	public class foo {
+	
 		public class response : SprotoTypeBase {
 			private static int max_field_count = 1;
 			
@@ -112,51 +87,11 @@ namespace SprotoType {
 		}
 
 
-		
-		private bool _ok; // tag 0
-		public bool ok {
-			get { return _ok; }
-			set { base.has_field.set_field (0, true); _ok = value; }
-		}
-		public bool HasOk {
-			get { return base.has_field.has_field (0); }
-		}
-
-		public foo () : base(max_field_count) {}
-
-		public foo (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode ();
-		}
-
-		protected override void decode () {
-			int tag = -1;
-			while (-1 != (tag = base.deserialize.read_tag ())) {
-				switch (tag) {
-				case 0:
-					this.ok = base.deserialize.read_boolean ();
-					break;
-				default:
-					base.deserialize.read_unknow_data ();
-					break;
-				}
-			}
-		}
-
-		public override int encode (SprotoStream stream) {
-			base.serialize.open (stream);
-
-			if (base.has_field.has_field (0)) {
-				base.serialize.write_boolean (this.ok, 0);
-			}
-
-			return base.serialize.close ();
-		}
 	}
 
 
-	public class foobar : SprotoTypeBase {
-		private static int max_field_count = 1;
-		
+	public class foobar {
+	
 		public class request : SprotoTypeBase {
 			private static int max_field_count = 1;
 			
@@ -247,45 +182,6 @@ namespace SprotoType {
 		}
 
 
-		
-		private string _what; // tag 0
-		public string what {
-			get { return _what; }
-			set { base.has_field.set_field (0, true); _what = value; }
-		}
-		public bool HasWhat {
-			get { return base.has_field.has_field (0); }
-		}
-
-		public foobar () : base(max_field_count) {}
-
-		public foobar (byte[] buffer) : base(max_field_count, buffer) {
-			this.decode ();
-		}
-
-		protected override void decode () {
-			int tag = -1;
-			while (-1 != (tag = base.deserialize.read_tag ())) {
-				switch (tag) {
-				case 0:
-					this.what = base.deserialize.read_string ();
-					break;
-				default:
-					base.deserialize.read_unknow_data ();
-					break;
-				}
-			}
-		}
-
-		public override int encode (SprotoStream stream) {
-			base.serialize.open (stream);
-
-			if (base.has_field.has_field (0)) {
-				base.serialize.write_string (this.what, 0);
-			}
-
-			return base.serialize.close ();
-		}
 	}
 
 

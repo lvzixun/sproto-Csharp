@@ -39,6 +39,21 @@ namespace sprotoCsharp
 			}
 		}
 
+		public static void assert(List<byte[]> a, List<byte[]> b) {
+			assert (a.Count == b.Count);
+			for (int i = 0; i < a.Count; i++) {
+				assert (a [i], b [i]);
+			}
+		}
+
+		public static void assert(List<double> a, List<double> b) {
+			assert (a.Count == b.Count);
+			for (int i = 0; i < a.Count; i++) {
+				assert (a [i] == b [i]);
+			}
+		}
+
+
 		public static void assert(List<bool> a, bool[] b) {
 			assert (a.Count == b.Length);
 			for (int i = 0; i < a.Count; i++) {

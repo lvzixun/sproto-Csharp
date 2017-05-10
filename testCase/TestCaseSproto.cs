@@ -11,13 +11,14 @@ namespace sprotoCsharp
 		}
 
 		static public void run(){
-			new TestCaseSprotoTypeFieldOP ().run ();
-			new TestCaseSprotoTypeSerialize ().run ();
-			new TestCaseSprotoTypeDeserialize ().run ();
-			new TestCaseSprotoPack ().run ();
-			new TestCaseTestAll ().run ();
-			new TestCaseRpc ().run ();
-			new TestCaseMap ().run ();
+//			new TestCaseSprotoTypeFieldOP ().run ();
+//			new TestCaseSprotoTypeSerialize ().run ();
+//			new TestCaseSprotoTypeDeserialize ().run ();
+//			new TestCaseSprotoPack ().run ();
+//			new TestCaseTestAll ().run ();
+//			new TestCaseRpc ().run ();
+//			new TestCaseMap ().run ();
+			new TestCaseDecAndBinary ().run ();
 		}
 
 	}
