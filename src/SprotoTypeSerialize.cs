@@ -147,7 +147,7 @@ namespace Sproto
 			
 			List<Int64> integer_list = new List<Int64> ();
 			foreach (double v in d_list) {
-				integer_list.Add ((Int64)(v * floor));
+				integer_list.Add ((Int64)(v * floor + 0.5));
 			}
 			write_integer (integer_list, tag);
 
