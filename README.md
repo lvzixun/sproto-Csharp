@@ -44,7 +44,7 @@ $ lua sprotodump.lua -cs Member.sproto  -o Member.cs
 
 Then you use that code like this:
 
-~~~~.c#
+~~~~.cs
 AddressBook address = new AddressBook ();
 address.person = new System.Collections.Generic.List<Person> ();
 
@@ -60,7 +60,7 @@ person.phone.Add (num1);
 ~~~~
 
 serialize and deserialize :
-~~~~.c#
+~~~~.cs
 byte[] data = address.encode ();                  // encode to bytes
 
 Sproto.SprotoStream stream = new SprotoStream (); // encode to stream
@@ -87,7 +87,7 @@ Foobar 1 {
 ```
 
 dump to c# code:
-~~~~.c#
+~~~~.cs
 public class Protocol : ProtocolBase {
   public static  Protocol Instance = new Protocol();
   static Protocol() {
