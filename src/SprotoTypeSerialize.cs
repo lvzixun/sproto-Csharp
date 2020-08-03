@@ -153,6 +153,28 @@ namespace Sproto
 
 		}
 
+        public void write_double(double v, int tag) {
+            UnionValue u = new UnionValue();
+            u.real_v = v;
+            this.encode_uint64(u.integer_v);
+            this.write_tag(tag, 0);
+        }
+
+        public void write_double(List<double> double_list, int tag) {
+            if (double_list == null || double_list.Count <= 0)
+                return;
+
+            int size = double_list.Count * 8;
+			this.fill_size(size+1);
+            this.data.WriteByte(8);
+            UnionValue u = new UnionValue();
+            for (int index = 0; index < double_list.Count; index++) {
+                u.real_v = double_list[index];
+                this.write_uint64(u.integer_v);
+            }
+            this.write_tag(tag, 0);
+        }
+
 		public void write_integer(Int64 integer, int tag) {
 			Int64 vh = integer >> 31;
 			int sz = (vh == 0 || vh == -1)?(sizeof(UInt32)):(sizeof(UInt64));

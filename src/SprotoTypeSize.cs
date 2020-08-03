@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Sproto
 {
@@ -12,5 +13,12 @@ namespace Sproto
 			throw new Exception (info);
 		}
 	}
+
+    [StructLayout(LayoutKind.Explicit)]
+    public struct UnionValue
+    {
+        [FieldOffset(0)] public UInt64 integer_v;
+        [FieldOffset(0)] public double real_v;
+    };
 }
 

@@ -125,6 +125,50 @@ namespace Sproto
 			return null;
 		}
 
+        private UInt64 read_uint64() {
+            UInt32 low = this.read_dword();
+            UInt32 hi = this.read_dword();
+            UInt64 v = (UInt64)low | (UInt64)hi << 32;
+            return v;
+        }
+
+        public double read_double() {
+            UInt32 sz = this.read_dword();
+            if(sz == 8) {
+                UnionValue v = new UnionValue();
+                v.integer_v = this.read_uint64();
+                return v.real_v;
+            } else {
+                SprotoTypeSize.error("read invalid double size (" + sz + ")");
+            }
+            return 0.0;
+        }
+
+        public List<double> read_double_list() {
+            List<double> double_list = null;
+
+            UInt32 sz = this.read_array_size();
+            if (sz == 0)
+            {
+                return new List<double>();
+            }
+
+            int len = this.reader.ReadByte();
+            sz--;
+
+            if(len != 8) {
+                SprotoTypeSize.error("invalid intlen (" + len + ")");
+            }
+
+            double_list = new List<double>();
+			UnionValue u = new UnionValue();
+			for (int i = 0; i < sz / 8; i++)
+            {
+				u.integer_v = this.read_uint64();
+                double_list.Add(u.real_v);
+            }
+            return double_list;
+        }
 
 		public Int64 read_integer() {
 			if (this.value >= 0) {
